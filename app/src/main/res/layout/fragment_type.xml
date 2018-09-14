@@ -1,0 +1,575 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryGray">
+
+    <!-- navbar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="@color/colorPrimaryWhite"
+        android:weightSum="3">
+
+        <!-- 倒退鍵 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center">
+
+            <ImageButton
+                android:id="@+id/ibBack"
+                android:layout_width="25dp"
+                android:layout_height="match_parent"
+                app:srcCompat="@drawable/back_arrow_green"
+                android:background="#00000000"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                android:layout_marginLeft="15dp"/>
+        </LinearLayout>
+
+        <!-- 標題 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textColor="@color/colorPrimaryLightBlack"
+                android:textSize="17dp"
+                android:text="搜尋地點" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- search & AR row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:weightSum="2"
+        android:padding="5dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="5dp">
+
+            <Button
+                android:id="@+id/btPlacePicker"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:background="@drawable/button_square_green"
+                android:textColor="@color/colorPrimaryWhite"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:layout_marginBottom="2dp"
+                android:text="搜尋地點" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="5dp">
+
+            <Button
+                android:id="@+id/btAr"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:background="@drawable/button_square_white"
+                android:textColor="@color/colorPrimaryBlack"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:layout_marginBottom="2dp"
+                android:text="AR 導航" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <!-- row 1 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:weightSum="4">
+
+        <!-- 美食 btn -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:weightSum="5">
+
+            <ImageButton
+                android:id="@+id/ibFood"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/food"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="0dp"
+                android:layout_weight="4"
+                android:gravity="center"
+                android:text="美食"
+                />
+
+        </LinearLayout>
+
+        <!-- 停車場 btn -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:weightSum="5">
+
+            <ImageButton
+                android:id="@+id/ibParking"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/parking"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="0dp"
+                android:layout_weight="4"
+                android:gravity="center"
+                android:text="停車場" />
+
+        </LinearLayout>
+
+        <!-- 醫院 btn -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:weightSum="5">
+
+            <ImageButton
+                android:id="@+id/ibHospital"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/hospital"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="0dp"
+                android:layout_weight="4"
+                android:gravity="center"
+                android:text="醫院" />
+
+        </LinearLayout>
+
+        <!-- 住宿 btn -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:weightSum="5">
+
+            <ImageButton
+                android:id="@+id/ibHotel"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/hotel"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="0dp"
+                android:layout_weight="4"
+                android:gravity="center"
+                android:text="住宿" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+    <!-- row 2 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:weightSum="4">
+
+        <!-- 美食 btn -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:weightSum="5">
+
+            <ImageButton
+                android:id="@+id/ibBus"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/bus"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="0dp"
+                android:layout_weight="4"
+                android:gravity="center"
+                android:text="公車站" />
+
+        </LinearLayout>
+
+        <!-- 公園 btn -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:weightSum="5">
+
+            <ImageButton
+                android:id="@+id/ibPark"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/park"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="0dp"
+                android:layout_weight="4"
+                android:gravity="center"
+                android:text="公園" />
+
+        </LinearLayout>
+
+        <!-- 便利商店 btn -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:weightSum="5">
+
+            <ImageButton
+                android:id="@+id/ibStore"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/store"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="0dp"
+                android:layout_weight="4"
+                android:gravity="center"
+                android:text="便利商店" />
+
+        </LinearLayout>
+
+        <!-- 郵局 btn -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:weightSum="5">
+
+            <ImageButton
+                android:id="@+id/ibPostOffice"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/post"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="0dp"
+                android:layout_weight="4"
+                android:gravity="center"
+                android:text="郵局" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</LinearLayout>
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<android.support.constraint.ConstraintLayout-->
+    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:background="@drawable/type_background"-->
+    <!--android:focusable="true"-->
+    <!--android:focusableInTouchMode="true">-->
+
+    <!--<ImageButton-->
+        <!--android:id="@+id/ibBus"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="16dp"-->
+        <!--android:layout_marginTop="56dp"-->
+        <!--android:background="#00000000"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/ibFood"-->
+        <!--app:srcCompat="@drawable/navigation_bus" />-->
+
+    <!--<ImageButton-->
+        <!--android:id="@+id/ibFood"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="16dp"-->
+        <!--android:layout_marginTop="132dp"-->
+        <!--android:background="#00000000"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toTopOf="parent"-->
+        <!--app:srcCompat="@drawable/navigation_food" />-->
+
+    <!--<ImageButton-->
+        <!--android:id="@+id/ibHospital"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="36dp"-->
+        <!--android:layout_marginTop="132dp"-->
+        <!--android:background="#00000000"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/ibParking"-->
+        <!--app:layout_constraintTop_toTopOf="parent"-->
+        <!--app:srcCompat="@drawable/navigation_hospital" />-->
+
+    <!--<ImageButton-->
+        <!--android:id="@+id/ibHotel"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="24dp"-->
+        <!--android:layout_marginTop="132dp"-->
+        <!--android:background="#00000000"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/ibHospital"-->
+        <!--app:layout_constraintTop_toTopOf="parent"-->
+        <!--app:srcCompat="@drawable/navigation_hotel" />-->
+
+    <!--<ImageButton-->
+        <!--android:id="@+id/ibPark"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="36dp"-->
+        <!--android:layout_marginTop="56dp"-->
+        <!--android:background="#00000000"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/ibBus"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/ibParking"-->
+        <!--app:srcCompat="@drawable/navigation_park" />-->
+
+    <!--<ImageButton-->
+        <!--android:id="@+id/ibParking"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="36dp"-->
+        <!--android:layout_marginTop="132dp"-->
+        <!--android:background="#00000000"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/ibFood"-->
+        <!--app:layout_constraintTop_toTopOf="parent"-->
+        <!--app:srcCompat="@drawable/navigation_parking" />-->
+
+    <!--<ImageButton-->
+        <!--android:id="@+id/ibPostOffice"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="24dp"-->
+        <!--android:layout_marginTop="56dp"-->
+        <!--android:background="#00000000"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/ibConvenience_store"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/ibHotel"-->
+        <!--app:srcCompat="@drawable/navigation_postoffice" />-->
+
+    <!--<ImageButton-->
+        <!--android:id="@+id/ibConvenience_store"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="36dp"-->
+        <!--android:layout_marginTop="56dp"-->
+        <!--android:background="#00000000"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/ibPark"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/ibHospital"-->
+        <!--app:srcCompat="@drawable/navigation_store" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/tvCancel"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginEnd="16dp"-->
+        <!--android:layout_marginTop="23dp"-->
+        <!--android:text="Cancel"-->
+        <!--android:textColor="@android:color/white"-->
+        <!--android:textSize="25sp"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintTop_toTopOf="parent" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/tvFood"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="28dp"-->
+        <!--android:layout_marginTop="8dp"-->
+        <!--android:text="美食"-->
+        <!--android:textColor="@android:color/white"-->
+        <!--android:textSize="20sp"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/ibFood" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/tvParking"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="40dp"-->
+        <!--android:layout_marginTop="8dp"-->
+        <!--android:text="停車場"-->
+        <!--android:textColor="@android:color/white"-->
+        <!--android:textSize="20sp"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/tvFood"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/ibParking" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/tvHospital"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="44dp"-->
+        <!--android:layout_marginTop="8dp"-->
+        <!--android:text="醫院"-->
+        <!--android:textColor="@android:color/white"-->
+        <!--android:textSize="20sp"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/tvParking"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/ibHospital" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/tvHotel"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="44dp"-->
+        <!--android:layout_marginTop="8dp"-->
+        <!--android:text="住宿"-->
+        <!--android:textColor="@android:color/white"-->
+        <!--android:textSize="20sp"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/tvHospital"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/ibHotel" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/tvBus"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="16dp"-->
+        <!--android:layout_marginTop="12dp"-->
+        <!--android:text="公車站"-->
+        <!--android:textColor="@android:color/white"-->
+        <!--android:textSize="20sp"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/ibBus" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/tvPark"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="40dp"-->
+        <!--android:layout_marginTop="12dp"-->
+        <!--android:text="公園"-->
+        <!--android:textColor="@android:color/white"-->
+        <!--android:textSize="20sp"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/tvBus"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/ibPark" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/tvStore"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="40dp"-->
+        <!--android:layout_marginTop="12dp"-->
+        <!--android:text="便利商店"-->
+        <!--android:textColor="@android:color/white"-->
+        <!--android:textSize="20sp"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/tvPark"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/ibConvenience_store" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/tvPostOffice"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="20dp"-->
+        <!--android:layout_marginTop="12dp"-->
+        <!--android:text="郵局"-->
+        <!--android:textColor="@android:color/white"-->
+        <!--android:textSize="20sp"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/tvStore"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/ibPostOffice" />-->
+
+
+    <!--<Button-->
+        <!--android:id="@+id/btPlacePicker"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="148dp"-->
+        <!--android:layout_marginTop="68dp"-->
+        <!--android:text="搜尋地點"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toTopOf="parent" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/tvPlaceName"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="40dp"-->
+        <!--android:layout_marginTop="20dp"-->
+        <!--android:text="TextView"-->
+        <!--android:textSize="20sp"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toTopOf="parent" />-->
+
+    <!--<Button-->
+        <!--android:id="@+id/btAr"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="36dp"-->
+        <!--android:layout_marginTop="68dp"-->
+        <!--android:text="AR導航"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toTopOf="parent" />-->
+<!--</android.support.constraint.ConstraintLayout>-->

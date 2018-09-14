@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Mango</string>
+    <string name="google_map_api_key">AIzaSyARVFl4dtk9rK3tCiG3fimE1GO3dsC0r7Q</string>
+    <string name="google_place_web_service_key">AIzaSyBlh1PeTDxEa6FRZTNSdDbHw8G_nE0x3Js</string>
+    <string name="chatbot_start_word">Mango</string>
+    <string name="chatbot_similar_start_word">mango</string>
+    <string name="bluetooth_device_name">SP-HM-BT210</string>
+</resources>

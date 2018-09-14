@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+        <!-- 機器人&醫療地點 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp">
+
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginLeft="8dp"
+                app:srcCompat="@drawable/robot_avatar"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="250dp"
+                android:layout_gravity="start"
+                android:background="@drawable/message_left_no_padding"
+                android:gravity="center"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="5dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_send"
+                    android:layout_width="wrap_content"
+                    android:maxWidth="250dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="3"
+                    android:textColor="@color/colorPrimaryLightBlack"
+                    android:gravity="center"
+                    android:textSize="16dp"
+                    android:padding="10dp"
+                    android:text="雙和醫院" />
+
+                <View
+                    android:layout_height="0.5dip"
+                    android:background="@color/colorPrimaryGray"
+                    android:layout_width="match_parent"/>
+
+                <Button
+                    android:id="@+id/link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="2"
+                    android:text="詳細資料"
+                    android:textSize="14dp"
+                    android:background="@android:color/transparent"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:textColor="@color/colorPrimaryBlue"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/time_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="5dp"
+                android:text="time"/>
+
+        </LinearLayout>
+
+</LinearLayout>

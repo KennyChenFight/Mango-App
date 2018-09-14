@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <!-- Main Color -->
+    <color name="colorPrimaryWhite">#FFFFFF</color>
+    <color name="colorPrimaryBlack">#000000</color>
+    <color name="colorPrimaryLightBlack">#303133</color>
+    <color name="colorPrimaryLightGray">#F0F3F4</color>
+    <color name="colorPrimaryGray">#E4E7ED</color>
+    <color name="colorPrimaryDarkYellow">#E6A23C</color>
+    <color name="colorPrimaryYellow">#F9E79F</color>
+    <color name="colorPrimaryLightYellow">#FCF3CF</color>
+    <color name="colorPrimaryGreen">#6ab04c</color>
+    <color name="colorPrimaryDarkGreen">#1E8449</color>
+    <color name="colorPrimaryPink">#FADBD8</color>
+    <color name="colorPrimaryLightPurple">#D2B4DE</color>
+    <color name="colorPrimaryBlue">#409EFF</color>
+    <color name="colorPrimaryRed">#F56C6C</color>
+    <!-- Font Color -->
+    <color name="secondFont">#909399</color>
+
+    <color name="event_color_01">#59dbe0</color>
+    <color name="event_color_02">#f57f68</color>
+    <color name="event_color_03">#87d288</color>
+    <color name="event_color_04">#f8b552</color>
+    <color name="toolbar">#efefef</color>
+    <color name="toolbar_text">#8f000000</color>
+    <color name="accent">#2789e4</color>
+</resources>

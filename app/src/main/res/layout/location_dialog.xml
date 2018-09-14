@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="280dp"
+    android:layout_height="200dp"
+    android:padding="15dp"
+    android:background="@drawable/dialog_background"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <!-- location name -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2">
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="15dp"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/google_map"/>
+
+        <TextView
+            android:id="@+id/tvPlaceName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="19dp"
+            android:layout_gravity="center"
+            android:textColor="@color/colorPrimaryBlack"
+            android:layout_centerHorizontal="true"
+            android:text="順發3C量販"/>
+
+    </LinearLayout>
+
+    <!-- star -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2">
+
+        <RatingBar
+            android:id="@+id/ratingBar"
+            android:scaleX="0.6"
+            android:scaleY="0.6"
+            android:rating="3.5"
+            android:progressTint="@color/colorPrimaryDarkYellow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:isIndicator="true"/>
+
+    </LinearLayout>
+
+    <!-- distance -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="55dp"
+            android:layout_marginRight="10dp"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/cursor"/>
+
+        <TextView
+            android:id="@+id/tvDistance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="17dp"
+            android:layout_gravity="center"
+            android:textColor="@color/colorPrimaryBlack"
+            android:layout_centerHorizontal="true"
+            android:text="15 公尺"/>
+
+    </LinearLayout>
+
+
+
+    <!-- buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:gravity="right|bottom">
+
+        <Button
+            android:id="@+id/btNo"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:background="@drawable/button_white"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:text="取消"/>
+
+        <Button
+            android:id="@+id/btYes"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:background="@drawable/button_green"
+            android:textColor="@color/colorPrimaryWhite"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:layout_marginLeft="15dp"
+            android:text="導航"/>
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>

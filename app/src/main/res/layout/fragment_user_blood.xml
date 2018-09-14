@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.music1353.aiboxandroid.BloodPressureActivity"
+    android:background="@color/colorPrimaryGray"
+    android:orientation="vertical">
+
+    <!-- navbar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/colorPrimaryWhite"
+        android:weightSum="3">
+
+        <!-- 倒退鍵 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center">
+
+            <ImageButton
+                android:id="@+id/ibBack"
+                android:layout_width="25dp"
+                android:layout_height="match_parent"
+                app:srcCompat="@drawable/back_arrow_green"
+                android:background="#00000000"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                android:layout_marginLeft="15dp"/>
+        </LinearLayout>
+
+        <!-- 標題 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textColor="@color/colorPrimaryLightBlack"
+                android:textSize="17dp"
+                android:text="血壓紀錄" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- main 區塊 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="9"
+        android:orientation="vertical">
+
+
+        <!-- 圖表 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="510dp"
+            android:layout_margin="15dp">
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/lineChart"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#ffffff" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btShare"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/button_square_green"
+            android:textColor="@color/colorPrimaryWhite"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:textSize="18dp"
+            android:text="分享"/>
+
+    </LinearLayout>
+
+</LinearLayout>

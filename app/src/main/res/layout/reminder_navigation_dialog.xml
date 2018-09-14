@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="300dp"
+    android:layout_height="130dp"
+    android:padding="15dp"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:background="@drawable/dialog_background">
+
+    <!-- title -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5">
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginLeft="11dp"
+            android:layout_marginRight="15dp"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/clock"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:layout_gravity="center"
+            android:textColor="@color/colorPrimaryBlack"
+            android:layout_centerHorizontal="true"
+            android:text="導航附近活動"/>
+
+    </LinearLayout>
+
+
+    <!-- buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
+        android:gravity="center|bottom">
+
+        <Button
+            android:id="@+id/btNo"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/button_white"
+            android:text="取消"/>
+
+        <Button
+            android:id="@+id/btYes"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/button_green"
+            android:layout_marginBottom="1dp"
+            android:textColor="@color/colorPrimaryWhite"
+            android:layout_marginLeft="15dp"
+            android:text="導航"/>
+
+    </LinearLayout>
+
+</LinearLayout>

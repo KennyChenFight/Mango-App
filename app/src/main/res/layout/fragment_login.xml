@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:background="@color/colorPrimaryLightGray"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <!-- space -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="right|center_vertical">
+        <Switch
+            android:id="@+id/swBluetooth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:theme="@style/SwitchTheme"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="20dp"
+            android:switchMinWidth="50dp"
+            android:gravity="center_vertical|center_horizontal"
+            android:switchPadding="10dp"
+            android:text="" />
+    </LinearLayout>
+
+    <!-- logo -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="7"
+        android:gravity="center"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="0dp">
+
+
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="273dp"
+            android:layout_height="251dp"
+            app:srcCompat="@drawable/login_logo" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:textSize="16dp"
+            android:textColor="@color/secondFont"
+            android:text="您最佳的語音助手"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
+    <!-- login & sign up buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="300dp"
+            android:minHeight="45dp"
+            android:background="@drawable/login_button_green"
+            android:textSize="20dp"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:textColor="@color/colorPrimaryWhite"
+            android:layout_marginBottom="20dp"
+            android:text="登入"/>
+
+        <Button
+            android:id="@+id/btRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="300dp"
+            android:minHeight="45dp"
+            android:background="@drawable/login_button_white"
+            android:textSize="20dp"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:textColor="@color/colorPrimaryBlack"
+            android:layout_marginBottom="10dp"
+            android:text="註冊"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>
