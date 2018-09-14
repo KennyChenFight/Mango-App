@@ -91,11 +91,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-// todo button按下後改變顏色
-// todo 對話過程中突然有關心或提醒事情跳出，提醒跟關心的時間衝突
-// todo 分享資訊
-// todo 撥打電話
-
 public class MainActivity extends AppCompatActivity implements LoginFragmentCallback, LocationListener, ReminderReceiver.ReminderMessageReceiver, PhoneStateReceiver.PhoneStateMessageReceiver, ReminderFragmentCallback{
 
     private static final int TTS_CHECK_CODE = 0;
