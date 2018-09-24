@@ -6,9 +6,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.Notification;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,7 +23,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
-import android.os.Message;
 import android.provider.Settings;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
@@ -34,14 +31,11 @@ import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.csim.scu.aibox.callback.ConversationCallback;
 import com.csim.scu.aibox.callback.LoginFragmentCallback;
 import com.csim.scu.aibox.callback.ReminderCallback;
@@ -58,7 +52,6 @@ import com.csim.scu.aibox.util.BluetoothHelperManager;
 import com.csim.scu.aibox.util.NotifactionUtil;
 import com.csim.scu.aibox.util.SpeechRecognizerManager;
 import com.csim.scu.aibox.util.TextToSpeechManager;
-import com.csim.scu.aibox.view.fragment.BloodFragment;
 import com.csim.scu.aibox.view.fragment.ConversationFragment;
 import com.csim.scu.aibox.view.fragment.EmergencyFragment;
 import com.csim.scu.aibox.view.fragment.GoogleMapFragment;
@@ -70,7 +63,6 @@ import com.csim.scu.aibox.view.fragment.TypeFragment;
 import com.csim.scu.aibox.view.fragment.UserInfoFragment;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.BufferedReader;
@@ -91,24 +83,37 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements LoginFragmentCallback, LocationListener, ReminderReceiver.ReminderMessageReceiver, PhoneStateReceiver.PhoneStateMessageReceiver, ReminderFragmentCallback{
+// todo 測試註冊流程，註冊完後不要自動關掉連接音箱
+// todo 測試音箱多人使用
+// todo 藍芽開關的敘述、緊急聯絡人的敘述
+
+public class MainActivity extends AppCompatActivity implements LoginFragmentCallback,
+        LocationListener, ReminderReceiver.ReminderMessageReceiver,
+        PhoneStateReceiver.PhoneStateMessageReceiver, ReminderFragmentCallback{
 
     private static final int TTS_CHECK_CODE = 0;
+    private static final int TIME_INTERVAL = 2000;
+    // receiver and its callback
     private ReminderReceiver reminderReceiver = new ReminderReceiver();
     private static ReminderReceiver.ReminderMessageReceiver reminderMessageReceiver;
     private PhoneStateReceiver phoneStateReceiver = new PhoneStateReceiver();
     private static PhoneStateReceiver.PhoneStateMessageReceiver phoneStateMessageReceiver;
-    private static final int TIME_INTERVAL = 2000;
     private long backPressed;
+    // locate user location
     private LocationManager locationManager;
     private Location myLocation;
+    // textToSpeech, Bluetooth, SpeechRecognizer Manager
     private TextToSpeechManager textToSpeechManager;
     private BluetoothHelperManager bluetoothHelperManager;
     private SpeechRecognizerManager speechRecognizerManager;
+    // fragment Manager
     private FragmentManager fragmentManager;
+    // 與Server端互相溝通的shareFlag(判斷對話流程), shareResponse(回覆句子)
     private String shareFlag = "";
     private String shareResponse = "";
+    // isStart:True => 已成功喚醒音箱(呼喊Mango), isStart:False => 尚未成功喚醒音箱
     private boolean isStart = false;
+    // UI
     private TextView tvUserName;
     private TextView tvUserHeight;
     private TextView tvUserWeight;
@@ -121,20 +126,29 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
     private CardView cvGame;
     private Switch sbConnectToBluetooth;
     private ImageButton ibPhoneBook;
+    // 判斷現在是否處於登入頁面
     private boolean isLoginFragment = false;
+    // 判斷是否已經設定過個人化鬧鐘
     private boolean setUserReminder = false;
     private int userReminderCount = -1;
     private boolean setNonUserReminder = false;
     private int nonUserReminderCount = -1;
+    // 取得電話(問醫院電話，並要撥打電話的流程)
     private String phoneNumber;
+    // 確定當前是否講完電話
+    private boolean isPhone = false;
+    // 取得地址(
+    private String hospitalAddress = "";
+    // 與其他頁面的Callback
     private ConversationCallback conversationCallback;
     private ReminderCallback reminderCallback;
     private TypeCallback typeCallback;
-    private boolean isPhone = false;
-    private String hospitalAddress = "";
+    // 確認是否是附近活動的提醒
     private boolean isOpenActivityNotify = false;
+    // 取得附近活動的標題、開始日期 => 前往提醒頁面放置
     private String openActivityTitle = "";
     private String openActivityStartDate = "";
+    // 取得附近活動的List
     private List<OpenActivity> openActivityList;
 
     @Override
@@ -147,10 +161,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
         phoneStateMessageReceiver = this;
         phoneStateReceiver.resumeRegisterCallback(phoneStateMessageReceiver);
         PhoneStateReceiver phoneStateReceiver = new PhoneStateReceiver();
-        // 準備註冊與移除廣播接收元件的IntentFilter物件
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_TIME_TICK);
-        // 註冊廣播接收元件
         registerReceiver(phoneStateReceiver, filter);
         findViews();
         openGPSSettings();
@@ -166,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
     public void onAttachFragment(Fragment fragment) {
         super.onAttachFragment(fragment);
 
+        // callback 實例化
         if (fragment.getTag().equals(ConversationFragment.class.getName())) {
             conversationCallback = (ConversationCallback) fragment;
         }
@@ -178,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
         }
     }
 
-
+    // UI 實例化
     private void findViews() {
         tvUserName = findViewById(R.id.tvUserName);
         tvUserHeight = findViewById(R.id.tvUserHeight);
@@ -204,14 +217,12 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
         setConnectToBluetoothListener();
     }
 
+    // 跳轉至登入頁面
     private void jumpToLoginFragment() {
-
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         LoginFragment loginFragment = new LoginFragment();
-        if(!loginFragment.isAdded()) {
-            fragmentTransaction.add(R.id.container, loginFragment, loginFragment.getClass().getName());
-            Logger.d("add login fragment");
-        }
+        fragmentTransaction.add(R.id.container, loginFragment, loginFragment.getClass().getName());
+        Logger.d("jump to login fragment");
         fragmentManager.executePendingTransactions();
         fragmentTransaction.commit();
         isLoginFragment = true;
@@ -610,7 +621,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                             }
                             else {
                                 if (shareFlag.equals("user_done")) {
-                                    sbConnectToBluetooth.setChecked(false);
+                                    //sbConnectToBluetooth.setChecked(false);
                                     isStart = false;
                                     shareFlag = "";
                                     LoginFragment fragment = (LoginFragment) fragmentManager.findFragmentByTag(new LoginFragment().getClass().getName());
@@ -1790,7 +1801,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                 if (jsonObject.getString("status").equals("200")) {
                     String needWater = jsonObject.getJSONObject("result").getString("needwater");
                     String needCal = jsonObject.getJSONObject("result").getString("needcalorie");
-                    NotifactionUtil.sendNotification(MainActivity.this, "每日提醒", "喝水量:" + needWater + "ml" + "\n" + "熱量:" + needCal + "cal" , true);
+                    NotifactionUtil.sendNotification(MainActivity.this, "每日提醒", "今日應攝取的喝水量:" + needWater + "ml" + "\n" + "今日應攝取的熱量:" + needCal + "cal", true);
                 }
                 else {
                     isStart = false;

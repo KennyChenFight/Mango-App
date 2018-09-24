@@ -4,7 +4,7 @@ package com.csim.scu.aibox.network;
 
 public class Url {
 
-    public final static String baseUrl = "http://192.168.43.234:5000/api";
+    public final static String baseUrl = "http://192.168.100.105:5000/api";
     public final static String loginUrl = "/androidUser/login";
     public final static String logoutUrl = "/androidUser/logout";
     public final static String userProfile = "/androidUser/getProfile";
