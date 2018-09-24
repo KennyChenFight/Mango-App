@@ -18,13 +18,10 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 import com.csim.scu.aibox.R;
-import com.csim.scu.aibox.callback.ConversationCallback;
 import com.csim.scu.aibox.callback.LoginFragmentCallback;
 import com.csim.scu.aibox.log.Logger;
 import com.csim.scu.aibox.network.Url;
 import com.csim.scu.aibox.util.SpeechRecognizerManager;
-import com.google.android.gms.common.api.GoogleApiClient;
-
 import android.widget.Switch;
 import org.json.JSONObject;
 import java.io.BufferedReader;
@@ -60,7 +57,10 @@ public class LoginFragment extends Fragment {
         return view;
     }
 
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -129,6 +129,7 @@ public class LoginFragment extends Fragment {
                 }
                 else {
                     if (!isAlreadyCancelBluetooth) {
+                        isAlreadyCancelBluetooth = true;
                         loginFragmentCallback.stopBluetoothDevice();
                     }
                 }
@@ -138,8 +139,8 @@ public class LoginFragment extends Fragment {
 
     public void registerUser(boolean isSuccess) {
         if (isSuccess) {
-            isAlreadyCancelBluetooth = true;
-            swBluetooth.setChecked(false);
+            //isAlreadyCancelBluetooth = false;
+            //swBluetooth.setChecked(false);
         }
     }
 

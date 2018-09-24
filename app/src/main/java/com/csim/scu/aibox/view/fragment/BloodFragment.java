@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -16,6 +17,7 @@ import android.widget.ImageButton;
 
 import com.csim.scu.aibox.R;
 import com.csim.scu.aibox.log.Logger;
+import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
@@ -27,6 +29,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.utils.Utils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,9 +37,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by kenny on 2018/8/19.
- */
 
 public class BloodFragment extends Fragment {
 
@@ -87,6 +87,8 @@ public class BloodFragment extends Fragment {
          */
         // 無資料的情況
         lineChart.setNoDataText("尚無血壓資料");
+        lineChart.setNoDataTextTypeface(Typeface.DEFAULT_BOLD);
+        lineChart.getPaint(Chart.PAINT_INFO).setTextSize(Utils.convertDpToPixel(30f));
         // 是否展示網格線
         lineChart.setDrawGridBackground(false);
         // 是否顯示邊界
@@ -120,12 +122,6 @@ public class BloodFragment extends Fragment {
             public String getFormattedValue(float value, AxisBase axis) {
                 Logger.d(value + "");
                 int index = (int) value;
-//                if (index == 0) {
-//                    return week[index];
-//                }
-//                else {
-//                    return "";
-//                }
                 if (index < 0 || index >= week.length) {
                     return "";
                 } else {
@@ -170,12 +166,14 @@ public class BloodFragment extends Fragment {
     }
 
     private void setLineChartData() {
-        List<ILineDataSet> dataSets = new ArrayList<>();
-        dataSets.add(getTelePressureLineDataSet());
-        dataSets.add(getDiasPressureLineDataSet());
-        LineData lineData = new LineData(dataSets);
-        lineChart.setData(lineData);
-        Logger.d(lineData.getDataSets().toString());
+        if (concerList.size() != 0) {
+            List<ILineDataSet> dataSets = new ArrayList<>();
+            dataSets.add(getTelePressureLineDataSet());
+            dataSets.add(getDiasPressureLineDataSet());
+            LineData lineData = new LineData(dataSets);
+            lineChart.setData(lineData);
+            Logger.d(lineData.getDataSets().toString());
+        }
     }
 
     private LineDataSet getTelePressureLineDataSet() {

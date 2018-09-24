@@ -8,7 +8,8 @@
     android:background="@color/colorPrimaryGray"
     android:orientation="vertical"
     android:focusable="true"
-    android:focusableInTouchMode="true">
+    android:focusableInTouchMode="true"
+    android:clickable="true">
 
     <!-- navbar -->
     <LinearLayout

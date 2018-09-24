@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.music1353.aiboxandroid.BloodPressureActivity"
     android:background="@color/colorPrimaryGray"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:clickable="true">
 
     <!-- navbar -->
     <LinearLayout
