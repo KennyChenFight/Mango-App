@@ -86,6 +86,7 @@ import java.util.Map;
 // todo 測試註冊流程，註冊完後不要自動關掉連接音箱
 // todo 測試音箱多人使用
 // todo 藍芽開關的敘述、緊急聯絡人的敘述
+// todo 登入畫面案返回會crash
 
 public class MainActivity extends AppCompatActivity implements LoginFragmentCallback,
         LocationListener, ReminderReceiver.ReminderMessageReceiver,
@@ -160,7 +161,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
         reminderReceiver.concernRegisterCallback(reminderMessageReceiver);
         phoneStateMessageReceiver = this;
         phoneStateReceiver.resumeRegisterCallback(phoneStateMessageReceiver);
-        PhoneStateReceiver phoneStateReceiver = new PhoneStateReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_TIME_TICK);
         registerReceiver(phoneStateReceiver, filter);
@@ -793,8 +793,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
             case "morning":
                 MorningConcern morningConcern = new MorningConcern();
                 morningConcern.execute(tvUserName.getText().toString());
-                // todo 尚未測試
-                NotifactionUtil.sendNotification(this, "每日提醒", "也要喝水囉", true);
                 break;
             case "noon":
                 NoonConcern noonConcern = new NoonConcern();
@@ -1414,10 +1412,18 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
             try {
                 if (jsonObject.getString("status").equals("200")) {
                     Logger.d("success logout");
-                    jumpToLoginFragment();
+                    if (sbConnectToBluetooth.isChecked()) {
+                        sbConnectToBluetooth.setChecked(false);
+                        bluetoothHelperManager.closeBluetooth();
+                    }
+                    unregisterReceiver(phoneStateReceiver);
                 }
             } catch (Exception e) {
                 Logger.e(e.toString());
+            } finally {
+                textToSpeechManager.shutDownTextToSpeech();
+                speechRecognizerManager.destorySpeechRecognizer();
+                recreate();
             }
         }
     }
@@ -1930,11 +1936,12 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
             backPressed = System.currentTimeMillis();
         }
         else {
-            if (fragmentManager.getBackStackEntryAt(count - 1).getName().equals(TypeFragment.class.getName())) {
-                typeCallback.backToMain();
-            }
-            else {
+            if (count == 0) {
                 super.onBackPressed();
+                finish();
+            }
+            else if (fragmentManager.getBackStackEntryAt(count - 1).getName().equals(TypeFragment.class.getName())) {
+                typeCallback.backToMain();
             }
         }
     }
