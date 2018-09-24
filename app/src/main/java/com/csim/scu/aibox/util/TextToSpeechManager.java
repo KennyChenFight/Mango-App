@@ -48,6 +48,10 @@ public class TextToSpeechManager implements TextToSpeech.OnInitListener{
         }
     }
 
+    public void shutDownTextToSpeech(){
+        textToSpeech.shutdown();
+    }
+
     public boolean isSpeaking() {
         return textToSpeech.isSpeaking();
     }

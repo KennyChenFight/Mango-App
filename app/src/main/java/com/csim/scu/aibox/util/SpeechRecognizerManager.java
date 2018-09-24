@@ -32,6 +32,10 @@ public class SpeechRecognizerManager {
         speechRecognizer.cancel();
     }
 
+    public void destorySpeechRecognizer() {
+        speechRecognizer.destroy();
+    }
+
     public void stopListening() {
         speechRecognizer.stopListening();
     }

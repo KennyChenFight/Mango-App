@@ -22,6 +22,7 @@ public class BluetoothHelperManager implements BluetoothProfile.ServiceListener 
     private BluetoothHeadset bluetoothHeadset;
     private BluetoothDevice bluetoothDevice;
     private SpeechRecognizerManager speechRecognizerManager;
+    private BluetoothReceiver bluetoothReceiver = new BluetoothReceiver();
     private String deviceName;
     private Context context;
 
@@ -123,7 +124,7 @@ public class BluetoothHelperManager implements BluetoothProfile.ServiceListener 
         filter.addAction(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         filter.addAction(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
-        context.registerReceiver(new BluetoothReceiver(), filter);
+        context.registerReceiver(bluetoothReceiver, filter);
     }
 
     private class BluetoothReceiver extends BroadcastReceiver {
