@@ -61,15 +61,15 @@
             android:gravity="right"
             android:layout_gravity="center">
 
-            <ImageButton
-                android:id="@+id/edit_ib"
-                android:layout_width="20dp"
-                android:layout_height="match_parent"
-                app:srcCompat="@drawable/edit_green"
-                android:background="#00000000"
-                android:adjustViewBounds="true"
-                android:scaleType="fitXY"
-                android:layout_marginRight="15dp"/>
+            <!--<ImageButton-->
+                <!--android:id="@+id/edit_ib"-->
+                <!--android:layout_width="20dp"-->
+                <!--android:layout_height="match_parent"-->
+                <!--app:srcCompat="@drawable/edit_green"-->
+                <!--android:background="#00000000"-->
+                <!--android:adjustViewBounds="true"-->
+                <!--android:scaleType="fitXY"-->
+                <!--android:layout_marginRight="15dp"/>-->
         </LinearLayout>
 
     </LinearLayout>

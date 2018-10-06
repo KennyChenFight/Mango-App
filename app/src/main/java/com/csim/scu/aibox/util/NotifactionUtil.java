@@ -15,6 +15,7 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
 import com.csim.scu.aibox.R;
+import com.csim.scu.aibox.log.Logger;
 import com.csim.scu.aibox.view.activity.MainActivity;
 
 /**
@@ -24,10 +25,10 @@ import com.csim.scu.aibox.view.activity.MainActivity;
 public class NotifactionUtil {
 
     private static NotificationManager manager;
-    private static final String id = "chenxh_id";
+    private static final String id = "remind_id";
     private static final int remind_id = 1;
     private static final int openActivity_id = 2;
-    private static final String name = "chenxh_name";
+    private static final String name = "remind_name";
     private static long[] vibrate = {0,100,200,300};
     //音樂Uri參數
     private static Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -48,12 +49,8 @@ public class NotifactionUtil {
     @TargetApi(26)
     private static Notification.Builder getChannelNotification(Context context, String title, String content, boolean isRemind){
 
-//        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.layout_notification);
-//        remoteViews.setImageViewResource(R.mipmap.ic_launcher, R.mipmap.ic_launcher);
-//        remoteViews.setTextViewText(R.id.title, "我是標題");
-//        remoteViews.setTextViewText(R.id.content, "我是内容");
         Notification.BigTextStyle style = new Notification.BigTextStyle();
-        PendingIntent contentIntent;
+        PendingIntent contentIntent = null;
         if (isRemind) {
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -64,13 +61,12 @@ public class NotifactionUtil {
             style.setBigContentTitle("提醒");
         }
         else {
-            Intent toFragment = new Intent(Intent.ACTION_MAIN);
+            Intent toFragment = new Intent();
             toFragment.putExtra("toValue", "ReminderFragment");
             toFragment.putExtra("title", "活動:" + title);
-            toFragment.addCategory(Intent.CATEGORY_LAUNCHER);
             toFragment.setComponent(new ComponentName(context, MainActivity.class));
             toFragment.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            contentIntent = PendingIntent.getActivity(context, 0, toFragment, PendingIntent.FLAG_UPDATE_CURRENT);
+            contentIntent = PendingIntent.getActivity(context, 0, toFragment, PendingIntent.FLAG_ONE_SHOT);
             style.setBigContentTitle("附近活動:" + title);
         }
         style.bigText(content);
@@ -101,23 +97,33 @@ public class NotifactionUtil {
 
     public static void sendNotification(Context context,String title, String content, boolean isRemind){
         if (Build.VERSION.SDK_INT >= 26) {
-            createNotificationChannel(context);//NotificationChannel 创建一个Notification，再去Builder
+            createNotificationChannel(context);//NotificationChannel 創建一个Notification，再去Builder
             Notification notification = getChannelNotification
-                    (context,title, content , isRemind).build();
+                    (context,title, content, isRemind).build();
             // 重複的聲響,直到用戶響應。
             notification.flags = Notification.FLAG_INSISTENT;
             // 把指定ID的通知持久的發送到狀態條上
             if (isRemind) {
-                getManager(context).notify(remind_id,notification);//管理者发送消息
+                getManager(context).notify(remind_id,notification);
             }
             else {
-                getManager(context).notify(openActivity_id,notification);//管理者发送消息
+                getManager(context).notify(openActivity_id,notification);
             }
         }
         else {
             Notification notification = getNotification_25(context,title, content).build();//先Builder
-            getManager(context).notify(1,notification);//管理者发送消息
+            getManager(context).notify(1,notification);
         }
+    }
+
+    public static void cancelOpenActivityNotification(Context context) {
+        NotificationManager notifManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notifManager.cancel(openActivity_id);
+    }
+
+    public static void cancelReminderNotification(Context context) {
+        NotificationManager notifManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notifManager.cancel(remind_id);
     }
 
 }

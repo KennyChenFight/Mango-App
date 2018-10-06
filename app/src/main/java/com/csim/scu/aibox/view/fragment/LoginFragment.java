@@ -46,6 +46,10 @@ public class LoginFragment extends Fragment {
     private Button btLogin;
     private Button btRegister;
     private Switch swBluetooth;
+    // check Login button state
+    private boolean isPressLogin = false;
+    // check Register button state
+    private boolean isPressRegister = false;
 
     @Nullable
     @Override
@@ -93,27 +97,33 @@ public class LoginFragment extends Fragment {
         btLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                swBluetooth.setChecked(false);
-                initSpeechListener();
-                LayoutInflater inflater = getLayoutInflater();
-                View layout = inflater.inflate(R.layout.login_toast, null);
-                Toast toast = new Toast(getActivity());
-                toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-                toast.setView(layout);
-                toast.show();
+                if (!isPressLogin) {
+                    isPressLogin = true;
+                    swBluetooth.setChecked(false);
+                    LayoutInflater inflater = getLayoutInflater();
+                    View layout = inflater.inflate(R.layout.login_toast, null);
+                    Toast toast = new Toast(getActivity());
+                    toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+                    toast.setView(layout);
+                    toast.show();
+                    initSpeechListener();
+                }
             }
         });
 
         btRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LayoutInflater inflater = getLayoutInflater();
-                View layout = inflater.inflate(R.layout.signup_toast, null);
-                Toast toast = new Toast(getActivity());
-                toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-                toast.setView(layout);
-                toast.show();
-                swBluetooth.setChecked(true);
+                if (!isPressRegister) {
+                    isPressRegister = true;
+                    LayoutInflater inflater = getLayoutInflater();
+                    View layout = inflater.inflate(R.layout.signup_toast, null);
+                    Toast toast = new Toast(getActivity());
+                    toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+                    toast.setView(layout);
+                    toast.show();
+                    swBluetooth.setChecked(true);
+                }
             }
         });
 
@@ -128,7 +138,11 @@ public class LoginFragment extends Fragment {
                     loginFragmentCallback.connectBluetoothDevice();
                 }
                 else {
-                    if (!isAlreadyCancelBluetooth) {
+                    if (!isAlreadyCancelBluetooth && !isPressLogin) {
+                        isAlreadyCancelBluetooth = true;
+                        loginFragmentCallback.stopBluetoothDevice();
+                    }
+                    else {
                         isAlreadyCancelBluetooth = true;
                         loginFragmentCallback.stopBluetoothDevice();
                     }
@@ -139,8 +153,8 @@ public class LoginFragment extends Fragment {
 
     public void registerUser(boolean isSuccess) {
         if (isSuccess) {
-            //isAlreadyCancelBluetooth = false;
-            //swBluetooth.setChecked(false);
+            isAlreadyCancelBluetooth = false;
+            isPressRegister = false;
         }
     }
 
@@ -188,14 +202,17 @@ public class LoginFragment extends Fragment {
         @Override
         protected void onPostExecute(String status) {
             if (status.equals("200")) {
+                isPressLogin = false;
                 Toast.makeText(getActivity(), "登入成功，為您轉至首頁", Toast.LENGTH_SHORT).show();
                 speechRecognizerManager.cancelSpeechRecognizer();
+                speechRecognizerManager.destorySpeechRecognizer();
                 UserProfileTask userProfileTask = new UserProfileTask();
                 userProfileTask.execute();
             }
             else {
+                isPressLogin = false;
                 Toast.makeText(getActivity(), "登入失敗", Toast.LENGTH_SHORT).show();
-                speechRecognizerManager.startListenering();
+                speechRecognizerManager.cancelSpeechRecognizer();
             }
         }
     }

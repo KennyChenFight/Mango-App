@@ -83,10 +83,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-// todo 測試註冊流程，註冊完後不要自動關掉連接音箱
 // todo 測試音箱多人使用
-// todo 藍芽開關的敘述、緊急聯絡人的敘述
-// todo 登入畫面案返回會crash
 
 public class MainActivity extends AppCompatActivity implements LoginFragmentCallback,
         LocationListener, ReminderReceiver.ReminderMessageReceiver,
@@ -380,34 +377,34 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
         if (now.before(morning)) {
             Intent intent = new Intent(this, ReminderReceiver.class);
             intent.putExtra("concern", "morning");
-            PendingIntent pi = PendingIntent.getBroadcast(this, ReminderReceiver.MORNING_CONCERN, intent, PendingIntent.FLAG_ONE_SHOT);
+            PendingIntent pi = PendingIntent.getBroadcast(this, ReminderReceiver.MORNING_CONCERN, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             am.setRepeating(AlarmManager.RTC_WAKEUP, morning.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
 
             intent = new Intent(this, ReminderReceiver.class);
             intent.putExtra("concern", "noon");
-            pi = PendingIntent.getBroadcast(this, ReminderReceiver.NOON_CONCERN, intent, PendingIntent.FLAG_ONE_SHOT);
+            pi = PendingIntent.getBroadcast(this, ReminderReceiver.NOON_CONCERN, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             am.setRepeating(AlarmManager.RTC_WAKEUP, noon.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
 
             intent = new Intent(this, ReminderReceiver.class);
             intent.putExtra("concern", "night");
-            pi = PendingIntent.getBroadcast(this, ReminderReceiver.NIGHT_CONCERN, intent, PendingIntent.FLAG_ONE_SHOT);
+            pi = PendingIntent.getBroadcast(this, ReminderReceiver.NIGHT_CONCERN, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             am.setRepeating(AlarmManager.RTC_WAKEUP, night.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
         }
         else if (now.before(noon)) {
             Intent intent = new Intent(this, ReminderReceiver.class);
             intent.putExtra("concern", "noon");
-            PendingIntent pi = PendingIntent.getBroadcast(this, ReminderReceiver.NOON_CONCERN, intent, PendingIntent.FLAG_ONE_SHOT);
+            PendingIntent pi = PendingIntent.getBroadcast(this, ReminderReceiver.NOON_CONCERN, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             am.setRepeating(AlarmManager.RTC_WAKEUP, noon.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
 
             intent = new Intent(this, ReminderReceiver.class);
             intent.putExtra("concern", "night");
-            pi = PendingIntent.getBroadcast(this, ReminderReceiver.NIGHT_CONCERN, intent, PendingIntent.FLAG_ONE_SHOT);
+            pi = PendingIntent.getBroadcast(this, ReminderReceiver.NIGHT_CONCERN, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             am.setRepeating(AlarmManager.RTC_WAKEUP, night.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
         }
         else if (now.before(night)) {
             Intent intent = new Intent(this, ReminderReceiver.class);
             intent.putExtra("concern", "night");
-            PendingIntent pi = PendingIntent.getBroadcast(this, ReminderReceiver.NIGHT_CONCERN, intent, PendingIntent.FLAG_ONE_SHOT);
+            PendingIntent pi = PendingIntent.getBroadcast(this, ReminderReceiver.NIGHT_CONCERN, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             am.setRepeating(AlarmManager.RTC_WAKEUP, night.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
         }
         else {
@@ -468,7 +465,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                 if (now.before(calendar)) {
                     Intent intent = new Intent(this, ReminderReceiver.class);
                     intent.putExtra("remind", dosomething);
-                    PendingIntent pi = PendingIntent.getBroadcast(this, i, intent, PendingIntent.FLAG_ONE_SHOT);
+                    PendingIntent pi = PendingIntent.getBroadcast(this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                     alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,  calendar.getTimeInMillis(), pi);
                 }
             } catch (ParseException e) {
@@ -519,7 +516,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                 calendar.setTime(date);
                 Intent intent = new Intent(this, ReminderReceiver.class);
                 intent.putExtra("remind", dosomething);
-                PendingIntent pi = PendingIntent.getBroadcast(this, 100 + i, intent, PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent pi = PendingIntent.getBroadcast(this, 100 + i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                 alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,  calendar.getTimeInMillis(), pi);
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -624,6 +621,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                                     //sbConnectToBluetooth.setChecked(false);
                                     isStart = false;
                                     shareFlag = "";
+                                    speechRecognizerManager.startListenering();
                                     LoginFragment fragment = (LoginFragment) fragmentManager.findFragmentByTag(new LoginFragment().getClass().getName());
                                     fragment.registerUser(true);
                                     Toast.makeText(getApplicationContext(), "您可以點選登入鍵進行登入了", Toast.LENGTH_SHORT).show();
@@ -1015,12 +1013,19 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
             try {
                 Map<String, String> map = new HashMap<>();
                 String city = "";
-                String latlng = String.valueOf(myLocation.getLatitude()) + "," + String.valueOf(myLocation.getLongitude());
-                URL cityUrl = new URL("http://maps.google.com/maps/api/geocode/json?latlng=" + latlng + "&language=zh-CN&sensor=true");
-                Logger.d(cityUrl.toString());
-                HttpURLConnection httpURLConnection = (HttpURLConnection) cityUrl.openConnection();
+                Geocoder geocoder = new Geocoder(getApplicationContext());
+                List<Address> addresses = null;
+                double lat = myLocation.getLatitude();
+                double lon = myLocation.getLongitude();
+                addresses = geocoder.getFromLocation(lat, lon, 1);
+                Address address = addresses.get(0);
+                city = address.getAdminArea();
+                map.put("city", city);
+
+                URL needUrl = new URL(Url.baseUrl + Url.userNeed);
+                URL weatherUrl = new URL(Url.baseUrl + Url.getWeather + city);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) needUrl.openConnection();
                 httpURLConnection.setRequestMethod("GET");
-                httpURLConnection.setRequestProperty("cookie", loadCookie());
                 httpURLConnection.setRequestProperty("cookie", loadCookie());
                 BufferedReader reader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
                 StringBuilder content = new StringBuilder();
@@ -1031,36 +1036,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                 httpURLConnection.disconnect();
                 reader.close();
 
-                // todo 命名
                 JSONObject jsonObject = new JSONObject(content.toString());
-                JSONArray jsonArray = (JSONArray) jsonObject.get("results");
-                JSONObject jsonObject1 = (JSONObject) jsonArray.get(0);
-                JSONArray jsonArray1 = jsonObject1.getJSONArray("address_components");
-                for (int i = 0; i < jsonArray1.length(); i++) {
-                    JSONArray jsonArray2 = (JSONArray) jsonArray1.getJSONObject(i).get("types");
-                    for (int j = 0; j < jsonArray2.length(); j++) {
-                        if (jsonArray2.get(j).toString().equals("administrative_area_level_1")) {
-                            city = jsonArray1.getJSONObject(i).get("long_name").toString();
-                        }
-                    }
-                }
-                map.put("city", city);
-
-                URL needUrl = new URL(Url.baseUrl + Url.userNeed);
-                URL weatherUrl = new URL(Url.baseUrl + Url.getWeather + city);
-                httpURLConnection = (HttpURLConnection) needUrl.openConnection();
-                httpURLConnection.setRequestMethod("GET");
-                httpURLConnection.setRequestProperty("cookie", loadCookie());
-                reader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
-                content = new StringBuilder();
-                line = "";
-                while((line = reader.readLine()) != null) {
-                    content.append(line);
-                }
-                httpURLConnection.disconnect();
-                reader.close();
-
-                jsonObject = new JSONObject(content.toString());
                 jsonObject = (JSONObject) jsonObject.get("result");
                 Logger.d(jsonObject.toString());
                 map.put("water", jsonObject.get("needwater").toString());
@@ -1144,6 +1120,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                     this);
             if (location != null) {
                 myLocation = location;
+                OpenActivityTask openActivityTask = new OpenActivityTask();
+                openActivityTask.execute();
             }
         }
         else {
@@ -1423,6 +1401,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
             } finally {
                 textToSpeechManager.shutDownTextToSpeech();
                 speechRecognizerManager.destorySpeechRecognizer();
+                bluetoothHelperManager.unRegisterReceiver();
                 recreate();
             }
         }
@@ -1926,6 +1905,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
 
         if (count == 0 && !isLoginFragment) {
             if (backPressed + TIME_INTERVAL > System.currentTimeMillis()) {
+                removeConcernReminder();
+                removeUserReminder();
+                removeNonUserReminder();
                 LogoutTask logoutTask = new LogoutTask();
                 logoutTask.execute();
                 return;
@@ -1943,38 +1925,49 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
             else if (fragmentManager.getBackStackEntryAt(count - 1).getName().equals(TypeFragment.class.getName())) {
                 typeCallback.backToMain();
             }
+            else {
+                super.onBackPressed();
+            }
         }
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         //點擊訊息欄到主Activity時 會執行這個方法
-        super.onNewIntent(intent);
         getNotify(intent);
         setIntent(intent);
     }
 
     private void getNotify(Intent intent) {
-        //拿到參數后 首先判斷是不是為空
+        //拿到參數後 首先判斷是不是為空
         String value = intent.getStringExtra("toValue");
         if (!TextUtils.isEmpty(value)) {
             switch (value) {
                 //在進行判斷需要做的操作
                 case "ReminderFragment":
-                    isOpenActivityNotify = true;
-                    openActivityTitle = intent.getStringExtra("title");
-                    for (OpenActivity openActivity : openActivityList) {
-                        if (openActivity.getTitle().equals(openActivityTitle)) {
-                            openActivityStartDate = openActivity.getStartDate();
-                            break;
+                    if (!isLoginFragment) {
+                        isOpenActivityNotify = true;
+                        openActivityTitle = intent.getStringExtra("title");
+                        for (OpenActivity openActivity : openActivityList) {
+                            if (openActivity.getTitle().equals(openActivityTitle)) {
+                                openActivityStartDate = openActivity.getStartDate();
+                                break;
+                            }
                         }
+                        NotifactionUtil.cancelOpenActivityNotification(this);
+                        UserReminderTask userReminderTask = new UserReminderTask();
+                        userReminderTask.execute();
                     }
-                    UserReminderTask userReminderTask = new UserReminderTask();
-                    userReminderTask.execute();
+                    else {
+                        NotifactionUtil.cancelOpenActivityNotification(this);
+                    }
                     break;
             }
         }
-        //做完操作以后必須將toValue的值初始化
+        else {
+            NotifactionUtil.cancelReminderNotification(this);
+        }
+        //做完操作以後必須將toValue的值初始化
         intent.putExtra("toValue", "");
         super.onNewIntent(intent);
     }

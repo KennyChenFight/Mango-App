@@ -127,6 +127,10 @@ public class BluetoothHelperManager implements BluetoothProfile.ServiceListener 
         context.registerReceiver(bluetoothReceiver, filter);
     }
 
+    public void unRegisterReceiver() {
+        context.unregisterReceiver(bluetoothReceiver);
+    }
+
     private class BluetoothReceiver extends BroadcastReceiver {
 
         @Override
