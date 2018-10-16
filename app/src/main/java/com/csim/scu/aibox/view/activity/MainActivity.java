@@ -50,6 +50,7 @@ import com.csim.scu.aibox.network.Url;
 import com.csim.scu.aibox.receiver.PhoneStateReceiver;
 import com.csim.scu.aibox.receiver.ReminderReceiver;
 import com.csim.scu.aibox.util.BluetoothHelperManager;
+import com.csim.scu.aibox.util.Click;
 import com.csim.scu.aibox.util.NotifactionUtil;
 import com.csim.scu.aibox.util.SpeechRecognizerManager;
 import com.csim.scu.aibox.util.TextToSpeechManager;
@@ -216,8 +217,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
         ibPhoneBook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ECPtask ecPtask = new ECPtask();
-                ecPtask.execute();
+                if (Click.isFastClick()) {
+                    ECPtask ecPtask = new ECPtask();
+                    ecPtask.execute();
+                }
             }
         });
         initParams();
@@ -270,61 +273,72 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
         cvUserInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                UserProfileTask userProfileTask = new UserProfileTask();
-                userProfileTask.execute();
+                if (Click.isFastClick()) {
+                    UserProfileTask userProfileTask = new UserProfileTask();
+                    userProfileTask.execute();
+                }
             }
         });
 
         cvGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = getPackageManager().getLaunchIntentForPackage("com.yini.ProductName");//com.yini.ProductName是我們unity的名稱((固定
-                startActivityForResult(intent, RESULT_OK);
+                if (Click.isFastClick()) {
+                    Intent intent = getPackageManager().getLaunchIntentForPackage("com.yini.ProductName");//com.yini.ProductName是我們unity的名稱((固定
+                    startActivityForResult(intent, RESULT_OK);
+                }
             }
         });
 
         cvConversation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                UserConversationTask userConversationTask = new UserConversationTask();
-                userConversationTask.execute();
+                if (Click.isFastClick()) {
+                    UserConversationTask userConversationTask = new UserConversationTask();
+                    userConversationTask.execute();
+                }
             }
         });
 
         cvRecommend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                RecommendTask recommendTask = new RecommendTask();
-                recommendTask.execute("台北");
+                if (Click.isFastClick()) {
+                    RecommendTask recommendTask = new RecommendTask();
+                    recommendTask.execute("台北");
+                }
             }
         });
 
         cvReminder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                UserReminderTask reminderTask = new UserReminderTask();
-                reminderTask.execute();
+                if (Click.isFastClick()) {
+                    UserReminderTask reminderTask = new UserReminderTask();
+                    reminderTask.execute();
+                }
             }
         });
 
         cvNavigation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                NavigationFragment navigationFragment = new NavigationFragment();
-                if (!navigationFragment.isAdded()) {
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("type", R.drawable.navigation_location);
-                    bundle.putBoolean("define", false);
-                    navigationFragment.setArguments(bundle);
-                    fragmentTransaction.add(R.id.container, navigationFragment, navigationFragment.getClass().getName());
-                    fragmentTransaction.addToBackStack(navigationFragment.getClass().getName());
+                if (Click.isFastClick()) {
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    NavigationFragment navigationFragment = new NavigationFragment();
+                    if (!navigationFragment.isAdded()) {
+                        Bundle bundle = new Bundle();
+                        bundle.putInt("type", R.drawable.navigation_location);
+                        bundle.putBoolean("define", false);
+                        navigationFragment.setArguments(bundle);
+                        fragmentTransaction.add(R.id.container, navigationFragment, navigationFragment.getClass().getName());
+                        fragmentTransaction.addToBackStack(navigationFragment.getClass().getName());
+                    } else {
+                        fragmentTransaction.show(navigationFragment);
+                    }
+                    fragmentManager.executePendingTransactions();
+                    fragmentTransaction.commit();
                 }
-                else {
-                    fragmentTransaction.show(navigationFragment);
-                }
-                fragmentManager.executePendingTransactions();
-                fragmentTransaction.commit();
             }
         });
     }
