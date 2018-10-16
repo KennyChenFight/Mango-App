@@ -41,7 +41,7 @@ public class TextToSpeechManager implements TextToSpeech.OnInitListener{
             // 值越大，聲音越尖
             textToSpeech.setPitch(0.9f);
             // 值越大，講話速度越快
-            textToSpeech.setSpeechRate(0.6f);
+            textToSpeech.setSpeechRate(1f);
             HashMap<String, String> map = new HashMap<>();
             map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "UniqueID");
             textToSpeech.speak(response, TextToSpeech.QUEUE_ADD, map);

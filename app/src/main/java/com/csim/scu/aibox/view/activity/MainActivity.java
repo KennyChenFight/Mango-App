@@ -30,6 +30,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
@@ -153,17 +154,27 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        fragmentManager = getFragmentManager();
-        reminderMessageReceiver = this;
-        reminderReceiver.concernRegisterCallback(reminderMessageReceiver);
-        phoneStateMessageReceiver = this;
-        phoneStateReceiver.resumeRegisterCallback(phoneStateMessageReceiver);
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_TIME_TICK);
-        registerReceiver(phoneStateReceiver, filter);
-        findViews();
-        openGPSSettings();
-        jumpToLoginFragment();
+        SharedPreferences pref = getSharedPreferences("preferences", MODE_PRIVATE);
+//        pref.edit().putBoolean("first", true).apply();
+//        Logger.d(pref.getBoolean("first", true)+"");
+        if (!pref.getBoolean("first", true)) {
+            fragmentManager = getFragmentManager();
+            reminderMessageReceiver = this;
+            reminderReceiver.concernRegisterCallback(reminderMessageReceiver);
+            phoneStateMessageReceiver = this;
+            phoneStateReceiver.resumeRegisterCallback(phoneStateMessageReceiver);
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(Intent.ACTION_TIME_TICK);
+            registerReceiver(phoneStateReceiver, filter);
+            findViews();
+            openGPSSettings();
+            jumpToLoginFragment();
+        }
+        else {
+            Intent intent = new Intent(MainActivity.this, IntroduceActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
     @Override
@@ -595,6 +606,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                 Runnable speechRunnable = new Runnable() {
                     @Override
                     public void run() {
+                        Logger.d(shareFlag);
                         if (shareFlag.equals("hospital_phone")) {
                             phoneNumber = shareResponse.substring(shareResponse.indexOf("是") + 1, shareResponse.indexOf(","));
                             Logger.d("phoneNumber:" + phoneNumber);
@@ -644,38 +656,43 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                                     isStart = false;
                                     shareFlag = "";
                                     speechRecognizerManager.startListenering();
-                                    new AlertDialog.Builder(MainActivity.this)
-                                            .setTitle("查詢地點通知")
-                                            .setMessage("導引至GoogleMap")
-                                            .setPositiveButton("確認", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    LocationTask locationTask = new LocationTask();
-                                                    locationTask.execute();
-                                                }
-                                            })
-                                            .setNegativeButton("不要", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
+                                    if (!isLoginFragment) {
+                                        new AlertDialog.Builder(MainActivity.this)
+                                                .setTitle("查詢地點通知")
+                                                .setMessage("導引至GoogleMap")
+                                                .setPositiveButton("確認", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        LocationTask locationTask = new LocationTask();
+                                                        locationTask.execute();
+                                                    }
+                                                })
+                                                .setNegativeButton("不要", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
 //                                                    Toast.makeText(getApplicationContext(), "no", Toast.LENGTH_SHORT).show();
-                                                }
-                                            })
-                                            .show();
+                                                    }
+                                                })
+                                                .show();
+                                    }
                                 }
                                 else if (shareFlag.equals("hospital_done")) {
                                     if (shareResponse.equals("好的，馬上為您撥打電話")) {
+//                                        speechRecognizerManager.stopListening();
                                         isPhone = true;
                                         Intent intent = new Intent(Intent.ACTION_CALL);
                                         intent.setData(Uri.parse("tel:" + phoneNumber));
                                         startActivity(intent);
                                     }
-                                    if (shareResponse.equals("好的，馬上為您導航")) {
+                                    else if (shareResponse.equals("好的，馬上為您導航")) {
                                         Geocoder geoCoder = new Geocoder(MainActivity.this, Locale.getDefault());
                                         List<Address> addressLocation = null;
                                         try {
                                             addressLocation = geoCoder.getFromLocationName(hospitalAddress, 1);
                                             double latitude = addressLocation.get(0).getLatitude();
                                             double longitude = addressLocation.get(0).getLongitude();
+                                            Logger.d(latitude+"");
+                                            Logger.d(longitude+"");
                                             String url = String.format("http://maps.google.com/maps?saddr=%s,%s&daddr=%s,%s", myLocation.getLatitude(), myLocation.getLongitude(),
                                                     latitude, longitude);
                                             Intent intent = new Intent();
@@ -685,7 +702,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                                             startActivity(intent);
                                         } catch (IOException e) {
                                             e.printStackTrace();
-                                            Logger.d(e.toString());
+                                            Logger.d("error:" + e.toString());
                                         }
                                         isStart = false;
                                         shareFlag = "";
@@ -733,9 +750,23 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                     chatResponseTask.execute(shareFlag, shareResponse);
                 }
                 else if (shareResponse.contains(getResources().getString(R.string.chatbot_start_word)) ||
-                        shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word))) {
+                        shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word))
+                        || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word2))
+                        || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word3))
+                        || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word4))
+                        || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word5))
+                        || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word6))
+                        || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word7))
+                        || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word8))) {
                     if (shareResponse.equals(getResources().getString(R.string.chatbot_start_word)) ||
-                            shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word))) {
+                            shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word))
+                            || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word2))
+                            || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word3))
+                            || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word4))
+                            || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word5))
+                            || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word6))
+                            || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word7))
+                            || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word8))) {
                         Logger.d("only Mango");
                         textToSpeechManager.speak(tvUserName.getText().toString() + "，您好，需要什麼服務嗎");
                     }
@@ -743,6 +774,13 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                         Logger.d("Mango with something");
                         shareResponse = shareResponse.replace(getResources().getString(R.string.chatbot_start_word), "");
                         shareResponse = shareResponse.replace(getResources().getString(R.string.chatbot_similar_start_word), "");
+                        shareResponse = shareResponse.replace(getResources().getString(R.string.chatbot_similar_start_word2), "");
+                        shareResponse = shareResponse.replace(getResources().getString(R.string.chatbot_similar_start_word3), "");
+                        shareResponse = shareResponse.replace(getResources().getString(R.string.chatbot_similar_start_word4), "");
+                        shareResponse = shareResponse.replace(getResources().getString(R.string.chatbot_similar_start_word5), "");
+                        shareResponse = shareResponse.replace(getResources().getString(R.string.chatbot_similar_start_word6), "");
+                        shareResponse = shareResponse.replace(getResources().getString(R.string.chatbot_similar_start_word7), "");
+                        shareResponse = shareResponse.replace(getResources().getString(R.string.chatbot_similar_start_word8), "");
                         ChatResponseTask chatResponseTask = new ChatResponseTask();
                         chatResponseTask.execute(shareFlag, shareResponse);
                     }
@@ -1116,10 +1154,18 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
             Criteria criteria = new Criteria();
             String bestProvider = locationManager.getBestProvider(criteria, true);
             Location location = locationManager.getLastKnownLocation(bestProvider);
-            locationManager.requestLocationUpdates(bestProvider, 100 * 1000, 500,
+            locationManager.requestLocationUpdates(bestProvider, 10000 * 3, 500,
                     this);
             if (location != null) {
                 myLocation = location;
+                Logger.d("我的位置定位成功");
+//                OpenActivityTask openActivityTask = new OpenActivityTask();
+//                openActivityTask.execute();
+            }
+            else {
+                Logger.d("我的位置定位失敗");
+                myLocation.setLatitude(22.997265);
+                myLocation.setLongitude(120.2199809);
                 OpenActivityTask openActivityTask = new OpenActivityTask();
                 openActivityTask.execute();
             }
@@ -1583,6 +1629,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
 
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
+            Logger.d(jsonObject.toString());
             try {
                 HashMap<String, String> hashMap = new HashMap<>();
                 String placeType = "";
@@ -1599,9 +1646,18 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                     date = locationDetail.getString("date");
 
                     Geocoder gc = new Geocoder(MainActivity.this, Locale.TRADITIONAL_CHINESE);
-                    List<Address> listAddress = gc.getFromLocationName(region, 1);
-                    double lat = listAddress.get(0).getLatitude();
-                    double lng = listAddress.get(0).getLongitude();
+                    double lat = 0;
+                    double lng = 0;
+
+                    if (region.equals("x")) {
+                        lat = myLocation.getLatitude();
+                        lng = myLocation.getLongitude();
+                    }
+                    else {
+                        List<Address> listAddress = gc.getFromLocationName(region, 1);
+                        lat = listAddress.get(0).getLatitude();
+                        lng = listAddress.get(0).getLongitude();
+                    }
                     hashMap.put("placeType", placeType);
                     hashMap.put("lat", String.valueOf(lat));
                     hashMap.put("lng", String.valueOf(lng));

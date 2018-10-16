@@ -72,6 +72,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import dmax.dialog.SpotsDialog;
+
 
 public class NavigationFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
@@ -87,6 +89,7 @@ public class NavigationFragment extends Fragment implements GoogleApiClient.Conn
     private World world;
     private List<HashMap<String, String>> nearbyPlaceInfo = new ArrayList<>();
     private ImageButton ibSearch;
+    private android.app.AlertDialog alertDialog = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -100,6 +103,7 @@ public class NavigationFragment extends Fragment implements GoogleApiClient.Conn
             specificPlace = (HashMap<String, String>) this.getArguments().getSerializable("place_location");
         }
         fragmentManager = getFragmentManager();
+        alertDialog = new SpotsDialog.Builder().setContext(getActivity()).build();
         setGoogleApiClient();
         findViews(view);
         return view;
@@ -118,7 +122,22 @@ public class NavigationFragment extends Fragment implements GoogleApiClient.Conn
             LocationServices.FusedLocationApi.requestLocationUpdates(
                     googleApiClient, locationRequest, this);
             Logger.d("connect to googleApiClient");
+
+            if (myLastLocation == null) {
+                Logger.d("我的定位失敗");
+                myLastLocation.setLatitude(22.997265);
+                myLastLocation.setLongitude(120.2199809);
+
+                if (specificPlace == null) {
+                    alertDialog.show();
+                    String url = getNearbyPlacesUrl(myLastLocation.getLatitude(), myLastLocation.getLongitude());
+                    GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
+                    getNearbyPlacesData.execute(url);
+                }
+            }
+
             if (specificPlace != null) {
+                alertDialog.show();
                 googleApiClient.disconnect();
                 String url = getDirectionApiUrl(specificPlace.get("lat"), specificPlace.get("lng"));
                 DirectionTask directionTask = new DirectionTask();
@@ -173,6 +192,7 @@ public class NavigationFragment extends Fragment implements GoogleApiClient.Conn
     public void onLocationChanged(Location location) {
         myLastLocation = location;
         if (specificPlace == null) {
+            alertDialog.show();
             String url = getNearbyPlacesUrl(myLastLocation.getLatitude(), myLastLocation.getLongitude());
             GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
             getNearbyPlacesData.execute(url);
@@ -227,9 +247,10 @@ public class NavigationFragment extends Fragment implements GoogleApiClient.Conn
         for (GeoObject geoObject : geoObjectList) {
             world.addBeyondarObject(geoObject);
         }
+
         beyondarFragment.setOnClickBeyondarObjectListener(new OnClickBeyondarObjectListener() {
             @Override
-            public void onClickBeyondarObject(ArrayList<BeyondarObject> arrayList) {
+            public void onClickBeyondarObject(final ArrayList<BeyondarObject> arrayList) {
                 BeyondarObject beyondarObject = arrayList.get(0);
                 String[] place_detail = beyondarObject.getName().split(",");
                 String place_name = place_detail[0];
@@ -253,6 +274,7 @@ public class NavigationFragment extends Fragment implements GoogleApiClient.Conn
                 btYes.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        alertDialog.show();
                         googleApiClient.disconnect();
                         String url = getDirectionApiUrl(lat, lng);
                         DirectionTask directionTask = new DirectionTask();
@@ -271,6 +293,20 @@ public class NavigationFragment extends Fragment implements GoogleApiClient.Conn
             }
         });
         beyondarFragment.setWorld(world);
+        alertDialog.dismiss();
+        if (nearbyPlaceInfo.size() == 0) {
+            new AlertDialog.Builder(getActivity())
+                    .setTitle("當前流量不足")
+                    .setMessage("請稍後在試")
+                    .setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            fragmentManager.popBackStackImmediate();
+                        }
+                    })
+                    .setCancelable(false)
+                    .show();
+        }
     }
 
     private String saveToInternalStorage(Bitmap bitmapImage, String name){
@@ -292,7 +328,7 @@ public class NavigationFragment extends Fragment implements GoogleApiClient.Conn
     private String getNearbyPlacesUrl(double latitude, double longitude) {
         StringBuilder stringBuilder = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         stringBuilder.append("location=" + latitude + "," + longitude);
-        stringBuilder.append("&radius=200");
+        stringBuilder.append("&radius=500");
         stringBuilder.append("&key=" + getResources().getString(R.string.google_place_web_service_key));
         Logger.d("getNearbyPlacesUrl:" + stringBuilder.toString());
         return stringBuilder.toString();
@@ -343,6 +379,7 @@ public class NavigationFragment extends Fragment implements GoogleApiClient.Conn
         StringBuilder stringBuilder = new StringBuilder(Url.googleDirectionAPi);
         stringBuilder.append("origin=" + myLastLocation.getLatitude() + "," + myLastLocation.getLongitude());
         stringBuilder.append("&destination=" + latitude + "," + longitude);
+        stringBuilder.append("&key=" + getResources().getString(R.string.google_map_api_key));
         Logger.d("getDirectionApiUrl:" + stringBuilder.toString());
         return stringBuilder.toString();
     }
@@ -384,9 +421,21 @@ public class NavigationFragment extends Fragment implements GoogleApiClient.Conn
         protected void onPostExecute(JSONObject jsonObject) {
             try {
                 if (jsonObject.getString("status").equals("OVER_QUERY_LIMIT")) {
-                    String url = getDirectionApiUrl(specificPlace.get("lat"), specificPlace.get("lng"));
-                    DirectionTask directionTask = new DirectionTask();
-                    directionTask.execute(url);
+//                    String url = getDirectionApiUrl(specificPlace.get("lat"), specificPlace.get("lng"));
+//                    DirectionTask directionTask = new DirectionTask();
+//                    directionTask.execute(url);
+                    alertDialog.dismiss();
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("當前流量不足")
+                            .setMessage("請稍後在試")
+                            .setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    fragmentManager.popBackStackImmediate();
+                                }
+                            })
+                            .setCancelable(false)
+                            .show();
                 }
                 else {
                     Gson gson = new Gson();
@@ -451,18 +500,12 @@ public class NavigationFragment extends Fragment implements GoogleApiClient.Conn
                             polyGeoObj.setName("arObj"+ j + k);
 
                             try {
-                                //Initialize distance of consecutive polyobjects
                                 double dist = LocationCalc.haversine(polylineLatLng.get(j).get(k).latitude,
                                         polylineLatLng.get(j).get(k).longitude, polylineLatLng.get(j).get(k + 1).latitude,
                                         polylineLatLng.get(j).get(k + 1).longitude) * 1000;
 
-                                //Check if distance between polyobjects is greater than twice the amount of space
-                                // intended , here it is (3*2)=6 .
                                 if (dist > 6) {
-
-                                    //Initialize count of ar objects to be added
                                     int arObj_count = ((int) dist / 3) - 1;
-
                                     double heading = SphericalUtil.computeHeading(new LatLng(polylineLatLng.get(j).get(k).latitude,
                                                     polylineLatLng.get(j).get(k).longitude),
                                             new LatLng(polylineLatLng.get(j).get(k + 1).latitude,
@@ -473,14 +516,11 @@ public class NavigationFragment extends Fragment implements GoogleApiClient.Conn
                                             ,3f
                                             ,heading);
 
-                                    //The distance to be incremented
                                     double increment_dist = 3f;
 
                                     for (int i = 0; i < arObj_count; i++) {
                                         GeoObject inter_polyGeoObj = new GeoObject(5000 + temp_inter_polycount++);
 
-                                        //Store the Lat,Lng details into new LatLng Objects using the functions
-                                        //in LocationCalc class.
                                         if (i > 0 && k < polylineLatLng.get(j).size()) {
                                             increment_dist += 3f;
 
@@ -492,13 +532,10 @@ public class NavigationFragment extends Fragment implements GoogleApiClient.Conn
                                                             polylineLatLng.get(j).get(k + 1).latitude
                                                             , polylineLatLng.get(j).get(k + 1).longitude)));
                                         }
-
-                                        //Set the Geoposition along with image and name
                                         inter_polyGeoObj.setGeoPosition(tempLatLng.latitude, tempLatLng.longitude);
                                         inter_polyGeoObj.setImageResource(R.drawable.ar_sphere_default_125x);
                                         inter_polyGeoObj.setName("inter_arObj" + j + k + i);
 
-                                        //Add Intermediate ArObjects to Augmented Reality World
                                         geoObjectList.add(inter_polyGeoObj);
                                     }
                                 }
@@ -513,6 +550,7 @@ public class NavigationFragment extends Fragment implements GoogleApiClient.Conn
                         world.addBeyondarObject(geoObject) ;
                     }
                     beyondarFragment.setWorld(world);
+                    alertDialog.dismiss();
                     beyondarFragment.setOnClickBeyondarObjectListener(new OnClickBeyondarObjectListener() {
                         @Override
                         public void onClickBeyondarObject(ArrayList<BeyondarObject> arrayList) {

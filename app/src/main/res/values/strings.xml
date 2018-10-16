@@ -4,5 +4,12 @@
     <string name="google_place_web_service_key">AIzaSyBlh1PeTDxEa6FRZTNSdDbHw8G_nE0x3Js</string>
     <string name="chatbot_start_word">Mango</string>
     <string name="chatbot_similar_start_word">mango</string>
+    <string name="chatbot_similar_start_word2">mental</string>
+    <string name="chatbot_similar_start_word3">Mental</string>
+    <string name="chatbot_similar_start_word4">芒果</string>
+    <string name="chatbot_similar_start_word5">LEGO</string>
+    <string name="chatbot_similar_start_word6">如果</string>
+    <string name="chatbot_similar_start_word7">蒙古</string>
+    <string name="chatbot_similar_start_word8">蒙古國</string>
     <string name="bluetooth_device_name">SP-HM-BT210</string>
 </resources>

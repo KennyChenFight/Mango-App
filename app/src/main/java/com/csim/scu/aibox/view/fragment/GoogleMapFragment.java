@@ -118,6 +118,9 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, L
             String url = getNearbyPlacesUrl();
             GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
             getNearbyPlacesData.execute(url);
+            if (lastLocation != null) {
+                updateMyMarkerLocation();
+            }
         }
     }
 
@@ -134,14 +137,13 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, L
     }
 
     private void updateMyMarkerLocation() {
-        if (myMarker != null) {
-            myMarker.remove();
+        if (myMarker == null) {
+            double latitude = lastLocation.getLatitude();
+            double longitude = lastLocation.getLongitude();
+            LatLng latLng = new LatLng(latitude, longitude);
+            myMarker = googleMap.addMarker(new MarkerOptions().position(latLng).title("我的位置"));
+            myMarker.showInfoWindow();
         }
-        double latitude = lastLocation.getLatitude();
-        double longitude = lastLocation.getLongitude();
-        LatLng latLng = new LatLng(latitude, longitude);
-        myMarker = googleMap.addMarker(new MarkerOptions().position(latLng).title("我的位置"));
-        myMarker.showInfoWindow();
     }
 
     private String getNearbyPlacesUrl() {
@@ -265,58 +267,50 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, L
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                String[] placeDetail = marker.getTitle().split(",");
-                final String place_name = placeDetail[0];
-                String rating = placeDetail[1];
-                String distance = placeDetail[2];
-                final String lat = placeDetail[3];
-                final String lng = placeDetail[4];
-                final Dialog dialog = new Dialog(getActivity());
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.setCancelable(false);
-                dialog.setContentView(R.layout.location_dialog);
-                TextView tvPlaceName = dialog.findViewById(R.id.tvPlaceName);
-                tvPlaceName.setText(place_name);
-                TextView tvDistance = dialog.findViewById(R.id.tvDistance);
-                tvDistance.setText(distance);
-                RatingBar ratingBar = dialog.findViewById(R.id.ratingBar);
-                ratingBar.setRating(Float.parseFloat(rating));
-                Button btYes = dialog.findViewById(R.id.btYes);
-                final Button btNo = dialog.findViewById(R.id.btNo);
-                btYes.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-//                        HashMap<String, String> place = new HashMap<>();
-//                        place.put("lat", lat);
-//                        place.put("lng", lng);
-//                        NavigationFragment navigationFragment = new NavigationFragment();
-//                        Bundle bundle = new Bundle();
-//                        bundle.putBoolean("which", true);
-//                        bundle.putSerializable("place_location", place);
-//                        navigationFragment.setArguments(bundle);
-//                        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-//                        fragmentTransaction.add(R.id.container, navigationFragment, navigationFragment.getClass().getName());
-//                        fragmentTransaction.addToBackStack(navigationFragment.getClass().getName());
-//                        fragmentTransaction.commit();
-//                        googleApiClient.disconnect();
-                        String url = String.format("http://maps.google.com/maps?saddr=%s,%s&daddr=%s,%s", lastLocation.getLatitude(),
-                                lastLocation.getLongitude(), lat, lng);
-                        Intent intent = new Intent();
-                        intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-                        intent.setAction(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse(url));
-                        startActivity(intent);
-                        dialog.dismiss();
-                    }
-                });
-                btNo.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                    }
-                });
-                dialog.show();
-                return true;
+                if (!marker.getTitle().equals("我的位置")) {
+                    String[] placeDetail = marker.getTitle().split(",");
+                    final String place_name = placeDetail[0];
+                    String rating = placeDetail[1];
+                    String distance = placeDetail[2];
+                    final String lat = placeDetail[3];
+                    final String lng = placeDetail[4];
+                    final Dialog dialog = new Dialog(getActivity());
+                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    dialog.setCancelable(false);
+                    dialog.setContentView(R.layout.location_dialog);
+                    TextView tvPlaceName = dialog.findViewById(R.id.tvPlaceName);
+                    tvPlaceName.setText(place_name);
+                    TextView tvDistance = dialog.findViewById(R.id.tvDistance);
+                    tvDistance.setText(distance);
+                    RatingBar ratingBar = dialog.findViewById(R.id.ratingBar);
+                    ratingBar.setRating(Float.parseFloat(rating));
+                    Button btYes = dialog.findViewById(R.id.btYes);
+                    final Button btNo = dialog.findViewById(R.id.btNo);
+                    btYes.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            String url = String.format("http://maps.google.com/maps?saddr=%s,%s&daddr=%s,%s", lastLocation.getLatitude(),
+                                    lastLocation.getLongitude(), lat, lng);
+                            Intent intent = new Intent();
+                            intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.setData(Uri.parse(url));
+                            startActivity(intent);
+                            dialog.dismiss();
+                        }
+                    });
+                    btNo.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog.show();
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
         });
     }
