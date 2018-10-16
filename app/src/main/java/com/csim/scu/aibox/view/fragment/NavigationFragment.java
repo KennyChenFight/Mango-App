@@ -8,10 +8,14 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -45,6 +49,7 @@ import com.csim.scu.aibox.model.Direction;
 import com.csim.scu.aibox.network.GoogleMapNearbyDataParser;
 import com.csim.scu.aibox.network.Url;
 import com.csim.scu.aibox.util.LocationCalc;
+import com.csim.scu.aibox.view.activity.MainActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -62,6 +67,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
@@ -70,6 +76,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import dmax.dialog.SpotsDialog;
@@ -104,6 +111,7 @@ public class NavigationFragment extends Fragment implements GoogleApiClient.Conn
         }
         fragmentManager = getFragmentManager();
         alertDialog = new SpotsDialog.Builder().setContext(getActivity()).build();
+        alertDialog.show();
         setGoogleApiClient();
         findViews(view);
         return view;
@@ -129,7 +137,6 @@ public class NavigationFragment extends Fragment implements GoogleApiClient.Conn
                 myLastLocation.setLongitude(120.2199809);
 
                 if (specificPlace == null) {
-                    alertDialog.show();
                     String url = getNearbyPlacesUrl(myLastLocation.getLatitude(), myLastLocation.getLongitude());
                     GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
                     getNearbyPlacesData.execute(url);
@@ -137,7 +144,6 @@ public class NavigationFragment extends Fragment implements GoogleApiClient.Conn
             }
 
             if (specificPlace != null) {
-                alertDialog.show();
                 googleApiClient.disconnect();
                 String url = getDirectionApiUrl(specificPlace.get("lat"), specificPlace.get("lng"));
                 DirectionTask directionTask = new DirectionTask();
@@ -192,7 +198,6 @@ public class NavigationFragment extends Fragment implements GoogleApiClient.Conn
     public void onLocationChanged(Location location) {
         myLastLocation = location;
         if (specificPlace == null) {
-            alertDialog.show();
             String url = getNearbyPlacesUrl(myLastLocation.getLatitude(), myLastLocation.getLongitude());
             GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
             getNearbyPlacesData.execute(url);
@@ -425,17 +430,31 @@ public class NavigationFragment extends Fragment implements GoogleApiClient.Conn
 //                    DirectionTask directionTask = new DirectionTask();
 //                    directionTask.execute(url);
                     alertDialog.dismiss();
-                    new AlertDialog.Builder(getActivity())
-                            .setTitle("當前流量不足")
-                            .setMessage("請稍後在試")
-                            .setPositiveButton("確定", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    fragmentManager.popBackStackImmediate();
-                                }
-                            })
-                            .setCancelable(false)
-                            .show();
+                    if (specificPlace != null) {
+                        double latitude = Double.parseDouble(specificPlace.get("lat"));
+                        double longitude = Double.parseDouble(specificPlace.get("lng"));
+                        Logger.d(latitude+"");
+                        Logger.d(longitude+"");
+                        String url = String.format("http://maps.google.com/maps?saddr=%s,%s&daddr=%s,%s", myLastLocation.getLatitude(), myLastLocation.getLongitude(),
+                                latitude, longitude);
+                        Intent intent = new Intent();
+                        intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+                        intent.setAction(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse(url));
+                        startActivity(intent);
+                    }
+                    else {
+                        new AlertDialog.Builder(getActivity())
+                                .setTitle("當前流量不足")
+                                .setMessage("請稍後在試")
+                                .setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                                    }
+                                })
+                                .show();
+                    }
                 }
                 else {
                     Gson gson = new Gson();
