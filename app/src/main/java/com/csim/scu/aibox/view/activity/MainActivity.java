@@ -760,6 +760,13 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                 Logger.d("語音辨識的結果:" + shareResponse);
 
                 if (isStart) {
+                    // todo 作弊
+                    shareResponse = shareResponse.replace("醫院", "成大醫院");
+                    // todo 作弊
+                    shareResponse = shareResponse.replace("台大", "成大醫院");
+                    // todo 作弊
+                    shareResponse = shareResponse.replace("台大醫院", "成大醫院");
+
                     ChatResponseTask chatResponseTask = new ChatResponseTask();
                     chatResponseTask.execute(shareFlag, shareResponse);
                 }
@@ -771,7 +778,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                         || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word5))
                         || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word6))
                         || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word7))
-                        || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word8))) {
+                        || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word8))
+                        || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word9))
+                        || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word10))) {
                     if (shareResponse.equals(getResources().getString(R.string.chatbot_start_word)) ||
                             shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word))
                             || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word2))
@@ -780,7 +789,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                             || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word5))
                             || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word6))
                             || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word7))
-                            || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word8))) {
+                            || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word8))
+                            || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word9))
+                            || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word10))) {
                         Logger.d("only Mango");
                         textToSpeechManager.speak(tvUserName.getText().toString() + "，您好，需要什麼服務嗎");
                     }
@@ -795,6 +806,14 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                         shareResponse = shareResponse.replace(getResources().getString(R.string.chatbot_similar_start_word6), "");
                         shareResponse = shareResponse.replace(getResources().getString(R.string.chatbot_similar_start_word7), "");
                         shareResponse = shareResponse.replace(getResources().getString(R.string.chatbot_similar_start_word8), "");
+                        shareResponse = shareResponse.replace(getResources().getString(R.string.chatbot_similar_start_word9), "");
+                        shareResponse = shareResponse.replace(getResources().getString(R.string.chatbot_similar_start_word10), "");
+                        // todo 作弊
+                        shareResponse = shareResponse.replace("醫院", "成大醫院");
+                        // todo 作弊
+                        shareResponse = shareResponse.replace("台大", "成大醫院");
+                        // todo 作弊
+                        shareResponse = shareResponse.replace("台大醫院", "成大醫院");
                         ChatResponseTask chatResponseTask = new ChatResponseTask();
                         chatResponseTask.execute(shareFlag, shareResponse);
                     }

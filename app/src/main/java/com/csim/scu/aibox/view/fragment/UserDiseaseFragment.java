@@ -73,7 +73,7 @@ public class UserDiseaseFragment extends Fragment{
         cbHigh_cholesterol_yes.setClickable(false);
         cbHigh_cholesterol_no.setClickable(false);
         cbDiabetes_yes.setClickable(false);
-        cbDiabetes_no.setChecked(false);
+        cbDiabetes_no.setClickable(false);
         if (map.get("heart_problem").equals("True")) {
             cbHeart_problem_yes.setChecked(true);
         }

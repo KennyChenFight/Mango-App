@@ -11,5 +11,7 @@
     <string name="chatbot_similar_start_word6">如果</string>
     <string name="chatbot_similar_start_word7">蒙古</string>
     <string name="chatbot_similar_start_word8">蒙古國</string>
+    <string name="chatbot_similar_start_word9">王國</string>
+    <string name="chatbot_similar_start_word10">韓國</string>
     <string name="bluetooth_device_name">SP-HM-BT210</string>
 </resources>
