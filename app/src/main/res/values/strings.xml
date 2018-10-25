@@ -13,5 +13,9 @@
     <string name="chatbot_similar_start_word8">蒙古國</string>
     <string name="chatbot_similar_start_word9">王國</string>
     <string name="chatbot_similar_start_word10">韓國</string>
-    <string name="bluetooth_device_name">SP-HM-BT210</string>
+    <string name="chatbot_similar_start_word11">人頭</string>
+    <string name="chatbot_similar_start_word12">明度</string>
+    <string name="chatbot_similar_start_word13">勞作</string>
+    <string name="bluetooth_device_name">小米小钢炮蓝牙音箱</string>
+    <!--<string name="bluetooth_device_name">Tivoo-audio</string>-->
 </resources>

@@ -85,6 +85,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import dmax.dialog.SpotsDialog;
+
 // todo 測試音箱多人使用
 
 public class MainActivity extends AppCompatActivity implements LoginFragmentCallback,
@@ -150,6 +152,11 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
     private String openActivityStartDate = "";
     // 取得附近活動的List
     private List<OpenActivity> openActivityList;
+    // 取得特定區域活動的List
+    private List<OpenActivity> openActivityForRegionList;
+    private String tempRegion;
+
+    private android.app.AlertDialog alertDialog = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -621,7 +628,36 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                     @Override
                     public void run() {
                         Logger.d(shareFlag);
-                        if (shareFlag.equals("hospital_phone")) {
+                        if (shareFlag.equals("110_119_55688_call")) {
+
+                            isPhone = true;
+                            Intent intent = new Intent(Intent.ACTION_CALL);
+                            if (shareResponse.contains("110") || shareResponse.contains("警察局")) {
+                                intent.setData(Uri.parse("tel:" + "110"));
+                                Logger.d("撥打110");
+                            }
+                            else if (shareResponse.contains("119") || shareResponse.contains("救護車")) {
+                                intent.setData(Uri.parse("tel:" + "119"));
+                                Logger.d("撥打119");
+                            }
+                            else if (shareResponse.contains("55688") || shareResponse.contains("計程車")) {
+                                intent.setData(Uri.parse("tel:" + "55688"));
+                                Logger.d("撥打55688");
+                            }
+                            startActivity(intent);
+                        }
+                        else if (shareFlag.equals("wow_phone")) {
+                            WowPhoneTask wowPhoneTask = new WowPhoneTask();
+                            wowPhoneTask.execute();
+                        }
+                        else if (shareFlag.equals("wow_done")) {
+                            LocationTask locationTask = new LocationTask();
+                            locationTask.execute();
+                            isStart = false;
+                            shareFlag = "";
+                            speechRecognizerManager.startListenering();
+                        }
+                        else if (shareFlag.equals("hospital_phone")) {
                             phoneNumber = shareResponse.substring(shareResponse.indexOf("是") + 1, shareResponse.indexOf(","));
                             Logger.d("phoneNumber:" + phoneNumber);
                             speechRecognizerManager.startListenering();
@@ -638,9 +674,16 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                             if (shareFlag.equals("morning_concern_done") || shareFlag.equals("noon_concern_done") || shareFlag.equals("night_concern_done")) {
                                 ConcernRelease concernRelease = new ConcernRelease();
                                 concernRelease.execute(tvUserName.getText().toString());
+                                if (!isLoginFragment && shareFlag.equals("noon_concern_done")) {
+                                    userReminderTask();
+                                    if (reminderCallback != null) {
+                                        reminderCallback.updateReminder();
+                                    }
+                                }
                                 isStart = false;
                                 shareFlag = "";
                                 speechRecognizerManager.startListenering();
+
                             }
                             else {
                                 if (shareFlag.equals("user_done")) {
@@ -760,15 +803,37 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                 Logger.d("語音辨識的結果:" + shareResponse);
 
                 if (isStart) {
-                    // todo 作弊
-                    shareResponse = shareResponse.replace("醫院", "成大醫院");
-                    // todo 作弊
-                    shareResponse = shareResponse.replace("台大", "成大醫院");
-                    // todo 作弊
-                    shareResponse = shareResponse.replace("台大醫院", "成大醫院");
-
-                    ChatResponseTask chatResponseTask = new ChatResponseTask();
-                    chatResponseTask.execute(shareFlag, shareResponse);
+                    // todo 刪除
+                    if (shareResponse.equals("早安")) {
+                        MorningConcern morningConcern = new MorningConcern();
+                        morningConcern.execute(tvUserName.getText().toString());
+                    }
+                    else if (shareResponse.equals("午安")) {
+                        NoonConcern noonConcern = new NoonConcern();
+                        noonConcern.execute(tvUserName.getText().toString());
+                    }
+                    else if (shareResponse.equals("晚安")) {
+                        NightConcern nightConcern = new NightConcern();
+                        nightConcern.execute(tvUserName.getText().toString());
+                    }
+                    // cheat:打電話
+                    else if (shareResponse.contains("打") || shareResponse.contains("打給")) {
+                        String temp = shareResponse;
+                        temp = temp.replace("打給", "");
+                        temp = temp.replace("打", "");
+                        if ((temp.equals("110") || temp.equals("警察局")) || (temp.equals("119") || temp.equals("救護車")) || (temp.equals("55688") || temp.equals("計程車"))) {
+                            shareFlag = "110_119_55688_call";
+                            textToSpeechManager.speak("好的，馬上為您撥打電話");
+                        }
+                        else {
+                            ChatResponseTask chatResponseTask = new ChatResponseTask();
+                            chatResponseTask.execute(shareFlag, shareResponse);
+                        }
+                    }
+                    else {
+                        ChatResponseTask chatResponseTask = new ChatResponseTask();
+                        chatResponseTask.execute(shareFlag, shareResponse);
+                    }
                 }
                 else if (shareResponse.contains(getResources().getString(R.string.chatbot_start_word)) ||
                         shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word))
@@ -780,7 +845,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                         || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word7))
                         || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word8))
                         || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word9))
-                        || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word10))) {
+                        || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word10))
+                        || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word11))
+                        || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word12))
+                        || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word13))) {
                     if (shareResponse.equals(getResources().getString(R.string.chatbot_start_word)) ||
                             shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word))
                             || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word2))
@@ -791,7 +859,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                             || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word7))
                             || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word8))
                             || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word9))
-                            || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word10))) {
+                            || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word10))
+                            || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word11))
+                            || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word12))
+                            || shareResponse.contains(getResources().getString(R.string.chatbot_similar_start_word13))) {
                         Logger.d("only Mango");
                         textToSpeechManager.speak(tvUserName.getText().toString() + "，您好，需要什麼服務嗎");
                     }
@@ -808,12 +879,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                         shareResponse = shareResponse.replace(getResources().getString(R.string.chatbot_similar_start_word8), "");
                         shareResponse = shareResponse.replace(getResources().getString(R.string.chatbot_similar_start_word9), "");
                         shareResponse = shareResponse.replace(getResources().getString(R.string.chatbot_similar_start_word10), "");
-                        // todo 作弊
-                        shareResponse = shareResponse.replace("醫院", "成大醫院");
-                        // todo 作弊
-                        shareResponse = shareResponse.replace("台大", "成大醫院");
-                        // todo 作弊
-                        shareResponse = shareResponse.replace("台大醫院", "成大醫院");
+                        shareResponse = shareResponse.replace(getResources().getString(R.string.chatbot_similar_start_word11), "");
+                        shareResponse = shareResponse.replace(getResources().getString(R.string.chatbot_similar_start_word12), "");
+                        shareResponse = shareResponse.replace(getResources().getString(R.string.chatbot_similar_start_word13), "");
+
                         ChatResponseTask chatResponseTask = new ChatResponseTask();
                         chatResponseTask.execute(shareFlag, shareResponse);
                     }
@@ -878,7 +947,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
     public void doReminderTask(String dosomething) {
         if (sbConnectToBluetooth.isChecked()) {
             speechRecognizerManager.cancelSpeechRecognizer();
-            textToSpeechManager.speak(dosomething);
+            textToSpeechManager.speak("小火龍，您該" + dosomething);
             NotifactionUtil.sendNotification(this, "個人提醒", dosomething, true);
         }
         else {
@@ -1673,6 +1742,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                 if (jsonObject.getString("status").equals("200")) {
                     JSONObject locationDetail = jsonObject.getJSONObject("result");
                     placeType = locationDetail.getString("location");
+                    Logger.d("地點類型:" + placeType);
                     region = locationDetail.getString("region");
                     distance = locationDetail.getString("number");
                     unit = locationDetail.getString("unit");
@@ -1687,25 +1757,43 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
                         lng = myLocation.getLongitude();
                     }
                     else {
-                        List<Address> listAddress = gc.getFromLocationName(region, 1);
-                        lat = listAddress.get(0).getLatitude();
-                        lng = listAddress.get(0).getLongitude();
+                        if (!region.equals("c")) {
+                            List<Address> listAddress = gc.getFromLocationName(region, 1);
+                            lat = listAddress.get(0).getLatitude();
+                            lng = listAddress.get(0).getLongitude();
+                        }
+                        else {
+                            lat = 0;
+                            lng = 0;
+                        }
                     }
                     hashMap.put("placeType", placeType);
+                    hashMap.put("region", region);
                     hashMap.put("lat", String.valueOf(lat));
                     hashMap.put("lng", String.valueOf(lng));
                     hashMap.put("distance", distance);
                     hashMap.put("unit", unit);
                     hashMap.put("date", date);
 
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("placeDetail", hashMap);
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    GoogleMapFragment googleMapFragment = new GoogleMapFragment();
-                    googleMapFragment.setArguments(bundle);
-                    fragmentTransaction.add(R.id.container, googleMapFragment, googleMapFragment.getClass().getName());
-                    fragmentTransaction.addToBackStack(googleMapFragment.getClass().getName());
-                    fragmentTransaction.commit();
+                    // todo 尚未測試
+                    if (placeType.equals("活動")) {
+                        tempRegion = region;
+                        alertDialog = new SpotsDialog.Builder().setContext(MainActivity.this).build();
+                        alertDialog.show();
+                        OpenActivityForRegionTask openActivityForRegionTask = new OpenActivityForRegionTask();
+                        openActivityForRegionTask.execute();
+                    }
+                    else {
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("placeDetail", hashMap);
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        GoogleMapFragment googleMapFragment = new GoogleMapFragment();
+                        googleMapFragment.setArguments(bundle);
+                        fragmentTransaction.add(R.id.container, googleMapFragment, googleMapFragment.getClass().getName());
+                        fragmentTransaction.addToBackStack(googleMapFragment.getClass().getName());
+                        fragmentTransaction.commit();
+                    }
+
                 }
                 Logger.d(jsonObject.toString());
             } catch (Exception e) {
@@ -1889,6 +1977,96 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
         }
     }
 
+    //todo 尚未測試
+    private class OpenActivityForRegionTask extends AsyncTask<String, Void, List<OpenActivity>> {
+
+        @Override
+        protected List<OpenActivity> doInBackground(String... strings) {
+            BufferedReader reader = null;
+            try {
+                URL url = new URL(Url.baseUrl + Url.getActivity);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setRequestMethod("GET");
+                httpURLConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                httpURLConnection.setRequestProperty("cookie", loadCookie());
+                httpURLConnection.connect();
+
+                reader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line = "";
+                while((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+                JSONObject jsonObject = new JSONObject(sb.toString());
+                httpURLConnection.disconnect();
+                reader.close();
+
+                try {
+                    if (jsonObject.getString("status").equals("200")) {
+                        Type listType = new TypeToken<List<OpenActivity>>() {}.getType();
+                        List<OpenActivity> tempOpenActivityList = new Gson().fromJson(jsonObject.getJSONArray("result").toString(), listType);
+                        openActivityForRegionList = new ArrayList<>();
+                        for (OpenActivity openActivity : tempOpenActivityList) {
+                            SimpleDateFormat sdf= new SimpleDateFormat("yyyy/MM/dd");
+                            Date startDate = sdf.parse(openActivity.getStartDate());
+                            Date endDate = sdf.parse(openActivity.getEndDate());
+                            Calendar nowCalendar = Calendar.getInstance();
+                            Calendar startCalendar = Calendar.getInstance();
+                            Calendar endCalendar = Calendar.getInstance();
+                            startCalendar.setTime(startDate);
+                            endCalendar.setTime(endDate);
+                            if (!openActivity.getLatitude().equals("") && !openActivity.getLongitude().equals("")) {
+                                if (nowCalendar.before(startCalendar) || (nowCalendar.after(startCalendar) && nowCalendar.before(endCalendar))) {
+                                    Geocoder geocoder = new Geocoder(getApplicationContext());
+                                    try {
+                                        List<Address> addresses = null;
+                                        double lat = Double.parseDouble(openActivity.getLatitude());
+                                        double lon = Double.parseDouble(openActivity.getLongitude());
+                                        addresses = geocoder.getFromLocation(lat, lon, 1);
+                                        String address = addresses.get(0).getAddressLine(0);
+                                        Logger.d("地址:" + address);
+                                        if (address.contains(tempRegion)) {
+                                            openActivityForRegionList.add(openActivity);
+                                        }
+                                    } catch (Exception e) {
+                                        Logger.e(e.toString());
+                                    }
+                                }
+                            }
+                        }
+                        alertDialog.dismiss();
+                    }
+                    else {
+
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Logger.e(e.toString());
+                }
+
+                return openActivityForRegionList;
+
+            } catch (Exception e) {
+                Logger.e(e.toString());
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<OpenActivity> openActivityArrayList) {
+            Bundle bundle = new Bundle();
+            Gson gson = new Gson();
+            String jsonOpenActivity = gson.toJson(openActivityArrayList);
+            bundle.putString("openActivityForRegion", jsonOpenActivity);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            GoogleMapFragment googleMapFragment = new GoogleMapFragment();
+            googleMapFragment.setArguments(bundle);
+            fragmentTransaction.add(R.id.container, googleMapFragment, googleMapFragment.getClass().getName());
+            fragmentTransaction.addToBackStack(googleMapFragment.getClass().getName());
+            fragmentTransaction.commit();
+        }
+    }
+
     private class OpenActivityTask extends AsyncTask<String, Void, JSONObject> {
 
         @Override
@@ -2059,6 +2237,44 @@ public class MainActivity extends AppCompatActivity implements LoginFragmentCall
         //做完操作以後必須將toValue的值初始化
         intent.putExtra("toValue", "");
         super.onNewIntent(intent);
+    }
+
+    private class WowPhoneTask extends AsyncTask<Void, Void, JSONObject> {
+
+
+        @Override
+        protected JSONObject doInBackground(Void... voids) {
+            try {
+                URL url = new URL(Url.baseUrl + Url.wowPhone);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setRequestMethod("GET");
+                httpURLConnection.setRequestProperty("cookie", loadCookie());
+                BufferedReader reader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
+                StringBuilder content = new StringBuilder();
+                String line = "";
+                while((line = reader.readLine()) != null) {
+                    content.append(line);
+                }
+                JSONObject jsonObject = new JSONObject(content.toString());
+                return (JSONObject) jsonObject.get("result");
+            } catch (Exception e) {
+                Logger.e(e.toString());
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject jsonObject) {
+            try {
+                String phone = jsonObject.get("phone").toString();
+                isPhone = true;
+                Intent intent = new Intent(Intent.ACTION_CALL);
+                intent.setData(Uri.parse("tel:" + phone));
+                startActivity(intent);
+            } catch (Exception e) {
+                Logger.e(e.toString());
+            }
+        }
     }
 
 }

@@ -16,6 +16,11 @@ public class Url {
     public final static String nonUserReminder = "/android/getRemind";
     public final static String addUserReminder = "/androidUser/addRemind";
     public final static String getWeather = "/android/getWeather?city=";
+    public final static String getBusStation = "/android/getBusStation?region=";
+    public final static String getMRT = "/android/getMRT";
+    public final static String getGasStation = "/android/getGasStation";
+    public final static String getWowLocation = "/android/getWowLocation";
+    public final static String wowPhone = "/android/getWowPhone";
     public final static String chatbotResponse = "/chatbot";
     public final static String userConcernLock = "/androidUser/concernLock";
     public final static String userConcernRelease = "/androidUser/concernRelease";
